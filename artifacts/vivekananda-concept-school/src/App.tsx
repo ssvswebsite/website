@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ArrowRight, Bus, Check, ChevronDown, ChevronRight, GraduationCap, Instagram, Mail, MapPin, Menu, Phone, Quote, Search, Send, User, UserRound, Volume2, VolumeX, X } from 'lucide-react';
+import { ArrowRight, Award, Baby, BarChart3, BookOpen, Building2, Bus, Calendar, Check, ChevronDown, ChevronRight, ClipboardCheck, Clock, Droplets, Eye, FileText, FlaskConical, Globe2, GraduationCap, Handshake, Heart, Instagram, Languages, Lightbulb, Mail, MapPin, Menu, MessageCircle, MessageSquare, Music, Palette, Phone, Presentation, Quote, Search, Send, Smile, Sprout, Stethoscope, Tent, TrendingUp, Trophy, User, UserRound, Users, Volume2, VolumeX, X } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -16,10 +16,8 @@ const WALLPAPER_TILE = { width: 897, height: 1753 };
    carrot/pineapple were dropped outright rather than pinned. Only one of
    the two apples survives here too. */
 const WALLPAPER_ICONS = [
-  { file: 'apple-svgrepo-com.svg', leftPct: 1.2, topPct: 3, widthPct: 6 },
-  { file: 'educate-svgrepo-com.svg', leftPct: 1, topPct: 22, widthPct: 5.6 },
-  { file: 'giraffe-svgrepo-com.svg', leftPct: 2.4, topPct: 32, widthPct: 6.8 },
-  { file: 'elephant-svgrepo-com.svg', leftPct: 1, topPct: 82, widthPct: 6.8 },
+  { file: 'apple-svgrepo-com.svg', leftPct: 93.1, topPct: 10, widthPct: 6 },
+  { file: 'elephant-svgrepo-com.svg', leftPct: 2, topPct: 64, widthPct: 6.8 },
   { file: 'bulb-svgrepo-com.svg', leftPct: 92.8, topPct: 95, widthPct: 6 },
 ] as const;
 
@@ -39,9 +37,18 @@ function WallpaperTile() {
   return <div className="relative mx-auto w-full" style={{ aspectRatio: `${WALLPAPER_TILE.width} / ${WALLPAPER_TILE.height}` }}>
     {ALL_TILE_ICONS.map((icon, index) => {
       const onLeft = icon.leftPct < 50;
-      const left = onLeft ? Math.random() * 14 : 86 + Math.random() * 14;
-      const top = Math.max(0, Math.min(99, icon.topPct + (Math.random() * 10 - 5)));
       const width = icon.widthPct * 0.92;
+      /* `left` is the icon's LEFT edge, so the right-hand band has to stop at
+         `100 - width` — anchoring it at up to 100% pushed the icon's own
+         width past the tile and the layer's `overflow-hidden` sliced it off.
+         `MARGIN` leaves room for the float animation, which drifts each icon
+         a little way in both axes. */
+      const MARGIN = 1.5;
+      const left = onLeft ? MARGIN + Math.random() * 12 : (100 - width - MARGIN) - Math.random() * 12;
+      /* Same again vertically. The tile is far taller than it is wide, so a
+         square icon `width`% across is only about half that in height-%. */
+      const heightPct = width * (WALLPAPER_TILE.width / WALLPAPER_TILE.height);
+      const top = Math.max(MARGIN, Math.min(100 - heightPct - MARGIN, icon.topPct + (Math.random() * 10 - 5)));
       return <div key={`${icon.file}-${index}`} className="wallpaper-icon-depth absolute" style={{ left: `${left}%`, top: `${top}%`, width: `${width}%` }}>
         <img src={`/wallpaper-icons/${icon.file}`} alt="" aria-hidden="true" className={`block w-full opacity-65 ${FLOAT_VARIANTS[index % FLOAT_VARIANTS.length]}`} style={{ animationDelay: `${((index * 1.3) % 12).toFixed(2)}s`, animationDuration: `${(14 + (index % 7) * 2.2).toFixed(2)}s` }} />
       </div>;
@@ -67,10 +74,86 @@ function WallpaperTile() {
    animation runs in 0s and the icon just sits still, exactly like
    `WallpaperTile` already does per icon. Randomised per mount (each pin
    only mounts once) so nearby icons don't bob in lockstep. */
-function PinnedIcon({ file, className, widthRem = 3.5, style }: { file: string; className: string; widthRem?: number; style?: CSSProperties }) {
+function PinnedIcon({ file, className = '', widthRem = 3.5, style }: { file: string; className?: string; widthRem?: number; style?: CSSProperties }) {
   return <div className={`wallpaper-icon-depth pointer-events-none absolute ${className}`} style={{ width: `${widthRem}rem`, ...style }}>
     <img src={`/wallpaper-icons/${file}`} alt="" aria-hidden="true" className="wallpaper-icon-float-a block w-full opacity-65" style={{ animationDuration: `${(14 + Math.random() * 10).toFixed(2)}s`, animationDelay: `${(Math.random() * 6).toFixed(2)}s` }} />
   </div>;
+}
+
+/* ═══════════════════════ WHERE THE DECORATIVE ICONS SIT ═══════════════════
+   Every deliberately-placed icon on the site is listed here, grouped by the
+   section it belongs to. This is the only place you need to edit to move
+   one — nothing else in the file hard-codes a position.
+
+   Each entry takes:
+     file   the filename in  public/wallpaper-icons/  (see that folder for
+            the full set: apple, books, bulb, carrot, cricket, cup, earth,
+            educate, elephant, giraffe, laptop, lion, paint-palette-palette,
+            physical-education, pineapple, rainbow, rocket, sleeping, star,
+            sun — each ends in `-svgrepo-com.svg`)
+     top    distance down from the section's top — '0%' is the very top,
+            '50%' halfway, '100%' the bottom. Use `bottom` instead to
+            measure up from the bottom edge.
+     left   distance in from the section's left edge. Use `right` instead to
+            measure in from the right edge. Small values like '1%' sit in
+            the page margin; anything past roughly '15%' starts to overlap
+            the text column, so keep them small unless you want an icon
+            sitting over the content.
+     size   width in rem — 3.5 is the usual, 4.5 is noticeably bigger.
+
+   To MOVE an icon, change its numbers. To ADD one, copy a line and change
+   the file. To REMOVE one, delete its line. To move an icon to a different
+   section, cut the line and paste it under that section's heading. Changes
+   show up as soon as you save — no restart needed.
+
+   Tip for dialling in a position: nudge in steps of 5% and refresh; the
+   percentages are of the whole section, so a tall section (Facilities)
+   moves a lot per percent and a short one moves a little.            */
+type IconPin = { file: string; top?: string; bottom?: string; left?: string; right?: string; size?: number };
+
+const PINNED_ICONS = {
+  /* ── About Us (the intro paragraph, the Vivekananda picture, branch cards) */
+  about: [
+    { file: 'sun-svgrepo-com.svg', top: '2%', right: '2%', size: 4 },
+    { file: 'earth-svgrepo-com.svg', top: '24%', right: '1.5%', size: 4.5 },
+  ],
+  /* ── SSC Results (the three result posters) */
+  results: [
+    { file: 'cup-svgrepo-com.svg', top: '42%', right: '1.5%', size: 4.5 },
+    { file: 'star-svgrepo-com.svg', top: '36%', left: '1.5%', size: 4 },
+    { file: 'rocket-svgrepo-com.svg', top: '50%', left: '1.5%', size: 4.5 },
+  ],
+  /* ── Facilities (the row of four circles) */
+  facilities: [
+    { file: 'lion-svgrepo-com.svg', top: '42%', left: '1.5%', size: 3.5 },
+    { file: 'laptop-svgrepo-com.svg', top: '28%', right: '1.5%', size: 4 },
+    { file: 'books-svgrepo-com.svg', top: '62%', right: '1.5%', size: 4 },
+  ],
+  /* ── Photo Gallery (the video and the circles beside it) */
+  gallery: [
+    { file: 'cricket-svgrepo-com.svg', top: '55%', right: '1.5%', size: 3.5 },
+    { file: 'physical-education-svgrepo-com.svg', top: '62%', left: '1.5%', size: 3.5 },
+  ],
+} satisfies Record<string, IconPin[]>;
+
+/* Icons thrown at random over a whole section rather than lined up in a
+   gutter. Positions are rolled once, in a `useState` initialiser rather than
+   on every render, so the scatter doesn't jump around under the reader.
+
+   The layering is what makes a full-width scatter safe: this wrapper is
+   `z-0` and the section's content is `relative z-10`, so an icon that lands
+   under a paragraph passes behind it instead of sitting on top of the words.
+   Without that, absolutely-positioned icons paint above in-flow text and the
+   section becomes unreadable wherever one lands. */
+/* Drops one section's icons in. The section it's used in needs `relative`
+   on it, which is what the percentages are measured against. */
+function SectionIcons({ pins }: { pins: readonly IconPin[] }) {
+  return <>{pins.map((pin, index) => <PinnedIcon
+    key={`${pin.file}-${index}`}
+    file={pin.file}
+    widthRem={pin.size ?? 3.5}
+    style={{ top: pin.top, bottom: pin.bottom, left: pin.left, right: pin.right }}
+  />)}</>;
 }
 
 function WallpaperLayer() {
@@ -131,22 +214,54 @@ function WallpaperLayer() {
 }
 
 
+/* Clicking a photograph opens it in an overlay on the page rather than
+   handing it to a new browser tab. The opener is handed down by context
+   because the things that open one — gallery orbs, gallery tiles, results
+   cards — sit several levels below `PageShell`, which is what owns the
+   state and renders the overlay. Defaults to a no-op so a component used
+   outside a shell still renders. */
+const LightboxContext = createContext<(src: string, alt: string) => void>(() => undefined);
+const useLightbox = () => useContext(LightboxContext);
+
+function Lightbox({ image, onClose }: { image: { src: string; alt: string }; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    /* The page behind must not scroll while the overlay is up, or a trackpad
+       flick moves the page rather than doing nothing. */
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = previous; };
+  }, [onClose]);
+  /* Backdrop closes; the photograph itself does not, so a click that lands on
+     the picture is not read as "I am done looking at this". */
+  return <div className="fixed inset-0 z-[90] grid place-items-center bg-[#101A2B]/85 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={image.alt} onClick={onClose} data-testid="lightbox">
+    <button type="button" onClick={onClose} aria-label="Close image" className="absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-full bg-white/90 text-[#123A5E] shadow-lg transition hover:bg-white" data-testid="button-lightbox-close"><X size={22} /></button>
+    <img src={image.src} alt={image.alt} className="max-h-[88dvh] max-w-[min(1100px,94vw)] rounded-xl border-[6px] border-white object-contain shadow-[0_30px_80px_-20px_rgba(0,0,0,.7)]" onClick={(event) => event.stopPropagation()} />
+  </div>;
+}
+
 const queryClient = new QueryClient();
 /* `#…` scrolls to a section on the home page; `/…` is a route of its own. The
    nav treats the two differently, so they can sit in one list. */
+/* Blogs is gone with the parent-testimonial section it pointed at — an
+   anchor to a section that no longer exists would simply do nothing. */
 const navItems = [
-  ['Home', '/'], ['About Us', '#about'], ['Results', '#results'], ['Facilities', '#media'],
-  ['Gallery', '/gallery'], ['Blogs', '#blogs'], ['Contact Us', '#contact'],
+  ['Home', '/'], ['About Us', '#about'], ['Results', '#results'],
+  ['Facilities', '#media'], ['School Life', '#school-life'], ['Gallery', '/gallery'],
+  ['Blogs', '/blogs'], ['Contact Us', '#contact'],
 ] as const;
-/* The header carries the six-item nav from the design; `navItems` above stays
-   the fuller list the footer prints. */
+/* The header's own nav; `navItems` above stays the fuller list the footer
+   prints. Labels are kept short here — "Why Us", not "Why Vivekananda
+   Concept School" — because seven of them plus the Campuses menu is already
+   as much as the bar holds before it wraps. */
 /* `Home` is a route rather than `#top`: from a branch page the anchor would
    only scroll that branch's own hero into view, where what is wanted is the
    way back to the group. Faculty is gone from here — it belongs to a branch
    now — and Gallery has a page of its own. */
 const headerNavItems = [
   ['Home', '/'], ['About Us', '#about'], ['Results', '#results'],
-  ['Facilities', '#media'], ['Gallery', '/gallery'],
+  ['Facilities', '#media'], ['School Life', '#school-life'], ['Gallery', '/gallery'],
 ] as const;
 
 function useReveals(key?: string) {
@@ -161,7 +276,18 @@ function useReveals(key?: string) {
    drops the GROUP OF SCHOOLS line there — that line belongs to the group's
    own pages, not to one school inside it. */
 function Logo({ footer = false, branchName, shimmer = 0 }: { footer?: boolean; branchName?: string; shimmer?: number }) {
-  return <a href="#top" className="flex shrink-0 items-center gap-3.5" data-testid="link-logo">
+  const [location, navigate] = useLocation();
+  /* On the home page `#top` is enough — the browser just scrolls the hero
+     into view. Anywhere else (Gallery, Blogs, a campus page) there is no
+     `#top` element on that route, so the hash quietly does nothing; this
+     routes home first and then scrolls, which is what "take me to home"
+     actually means from any page. */
+  return <a href="/" onClick={(event) => {
+    event.preventDefault();
+    if (location === '/') { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    navigate('/');
+    window.scrollTo({ top: 0 });
+  }} className="flex shrink-0 items-center gap-3.5" data-testid="link-logo">
     <span className="relative block h-[64px] w-[64px] shrink-0 overflow-hidden rounded-full sm:h-[82px] sm:w-[82px]">
       <img src="/logo.jpeg" alt="Sree Vivekananda Educational Society logo" className="h-full w-full object-cover" />
       {/* Keyed on the click count: a fresh element each click is what restarts
@@ -190,9 +316,10 @@ function Header({ onEnquire }: { onEnquire: () => void }) {
      further down the file, so a top-level derivation would run too early. */
   const branchLinks = Object.entries(BRANCHES);
   const onBranch = location.startsWith('/branch/');
-  /* Those two are home-page sections; from a branch the links would only
+  /* These are home-page sections; from a campus page the links would only
      bounce you back to the group site, so they are not offered there. */
-  const items = onBranch ? headerNavItems.filter(([, href]) => href !== '#results' && href !== '#media') : headerNavItems;
+  const homeOnly = ['#results', '#media', '#school-life'];
+  const items = onBranch ? headerNavItems.filter(([, href]) => !homeOnly.includes(href)) : headerNavItems;
   const currentBranch = onBranch ? BRANCHES[location.slice('/branch/'.length)] : undefined;
   const go = (href: string) => {
     setOpen(false);
@@ -208,7 +335,7 @@ function Header({ onEnquire }: { onEnquire: () => void }) {
     navigate('/');
     requestAnimationFrame(() => requestAnimationFrame(() => document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' })));
   };
-  return <header className="relative z-30 border-b border-[#EFE7D7] bg-white">
+  return <header className="sticky top-0 z-30 border-b border-[#EFE7D7] bg-white">
     <div className="container-hero flex min-h-[80px] items-center justify-between gap-4 sm:min-h-[104px] sm:gap-6">
       <Logo branchName={currentBranch?.streetName} shimmer={shimmer} />
       <nav className="hidden items-center gap-[clamp(.9rem,2.1vw,2.1rem)] lg:flex" aria-label="Primary navigation">
@@ -223,7 +350,7 @@ function Header({ onEnquire }: { onEnquire: () => void }) {
             menu rather than lengthening a nav that is already full. */}
         <div className="relative" onMouseEnter={() => setBranchesOpen(true)} onMouseLeave={() => setBranchesOpen(false)}>
           <button type="button" onClick={() => setBranchesOpen(!branchesOpen)} aria-expanded={branchesOpen} aria-haspopup="true" className={`relative flex items-center gap-1 whitespace-nowrap pb-[6px] text-[clamp(.9rem,1.05vw,1.06rem)] font-semibold transition-colors ${onBranch ? 'text-[#1B7A3E]' : 'text-[#153B5B] hover:text-[#1B7A3E]'}`} data-testid="button-nav-branches">
-            Branches
+            Campuses
             <ChevronDown size={14} className={`transition-transform duration-200 ${branchesOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
             <span className={`absolute -bottom-[3px] left-0 h-[3px] rounded-full bg-[#1B7A3E] transition-all duration-300 ${onBranch ? 'w-full opacity-100' : 'w-0 opacity-0'}`} />
           </button>
@@ -236,7 +363,7 @@ function Header({ onEnquire }: { onEnquire: () => void }) {
         </div>
       </nav>
       <div className="flex items-center gap-2">
-        <button onClick={onEnquire} className="hidden rounded-full border-2 border-[#123A5E] px-[clamp(1.3rem,2.1vw,2.1rem)] py-[11px] text-[clamp(.9rem,1.05vw,1.06rem)] font-semibold text-[#123A5E] transition hover:bg-[#123A5E] hover:text-white md:block" data-testid="button-header-enquiry">Enquire Now</button>
+        <button onClick={onEnquire} className="hidden rounded-full border-2 border-[#123A5E] px-[clamp(1.3rem,2.1vw,2.1rem)] py-[11px] text-[clamp(.9rem,1.05vw,1.06rem)] font-semibold text-[#123A5E] transition hover:bg-[#123A5E] hover:text-white md:block" data-testid="button-header-enquiry">Contact Us</button>
         <button onClick={() => setOpen(!open)} className="rounded-md p-2 text-[#153B5B] lg:hidden" aria-label="Toggle menu" data-testid="button-mobile-menu">{open ? <X size={24} /> : <Menu size={24} />}</button>
       </div>
     </div>
@@ -244,12 +371,12 @@ function Header({ onEnquire }: { onEnquire: () => void }) {
       <nav>
         {items.map(([label, href]) => <a key={href} href={href} onClick={(e) => { e.preventDefault(); go(href); }} className="flex items-center justify-between border-b border-[#EFE7D7] py-3 text-[15px] font-semibold text-[#153B5B]" data-testid={`link-mobile-nav-${label.toLowerCase().replaceAll(' ', '-')}`}>{label}<ChevronRight size={15} /></a>)}
         <div className="border-b border-[#EFE7D7] py-3">
-          <p className="text-[12px] font-bold uppercase tracking-[.16em] text-[#7C8B99]">Branches</p>
+          <p className="text-[12px] font-bold uppercase tracking-[.16em] text-[#7C8B99]">Campuses</p>
           {branchLinks.map(([slug, info]) => <a key={slug} href={`/branch/${slug}`} onClick={(e) => { e.preventDefault(); go(`/branch/${slug}`); }} className="flex items-center justify-between py-2 text-[15px] font-semibold text-[#153B5B]" data-testid={`link-mobile-branch-${slug}`}>{info.streetName}<ChevronRight size={15} /></a>)}
         </div>
       </nav>
       <a href="tel:+918500045678" className="mt-4 flex items-center gap-2 text-sm font-semibold text-[#1B7A3E]" data-testid="link-mobile-phone"><Phone size={14} /> +91 85000 45678</a>
-      <button onClick={onEnquire} className="mt-3 w-full rounded-full bg-[#1B7A3E] py-3 text-sm font-bold text-white" data-testid="button-mobile-enquiry">Enquire Now</button>
+      <button onClick={onEnquire} className="mt-3 w-full rounded-full bg-[#1B7A3E] py-3 text-sm font-bold text-white" data-testid="button-mobile-enquiry">Contact Us</button>
     </div>}
   </header>;
 }
@@ -337,16 +464,17 @@ function HeroDoodles() {
 
 /* ------------------------------------------------------------------- hero */
 
-/* The hero is one long band that creeps from left to right, and the blue
-   brand panel rides in it like any other slide rather than sitting still
-   between two moving ones. The whole run appears twice and the band travels
-   exactly one run per cycle, so the duplicate is standing where the original
-   stood when it resets and the circle never shows a join. */
+/* Every one of these is cut to exactly 1600×530 — the banner window's own
+   ratio — so each fills the frame edge to edge with nothing cropped away at
+   display size and no letterbox bar. They were cropped from the photographs
+   the site already ships (see `public/banner-*.jpg`); to add another, cut it
+   to 1600×530 and drop it in this list. */
 const HERO_PHOTOS = [
-  { src: '/hero-cbse-lead.png', alt: 'Students studying together — CBSE LEAD curriculum', caption: 'CBSE LEAD CURRICULUM' },
-  { src: '/hero-our-values.jpg', alt: 'Our values — knowledge, discipline, values, innovation, leadership', caption: 'EMPOWERING MINDS, BUILDING CHARACTER' },
-  { src: '/hero-learn-today.jpg', alt: 'Students writing in class', caption: 'LEARN TODAY, LEAD TOMORROW' },
-  { src: '/hero-safe-journeys.jpg', alt: 'Students boarding the school bus', caption: 'SAFE JOURNEYS, BRIGHTER TOMORROWS' },
+  { src: '/banner-smart-classrooms.jpg', alt: 'Students at work in a smart classroom', caption: 'SMART CLASSROOMS' },
+  { src: '/banner-safe-journeys.jpg', alt: 'Students boarding the school bus', caption: 'SAFE JOURNEYS, BRIGHTER TOMORROWS' },
+  { src: '/banner-campus.jpg', alt: 'Students crossing the school courtyard', caption: 'A CAMPUS BUILT FOR LEARNING' },
+  { src: '/banner-athletics.jpg', alt: 'Students racing on the athletics track', caption: 'STRONG BODIES, STRONG MINDS' },
+  { src: '/banner-transport.jpg', alt: 'A student beside the school bus', caption: 'SAFE & CONVENIENT TRANSPORT' },
 ] as const;
 
 function HeroBrand({ place, eyebrow, headingLevel }: { place: string; eyebrow: string; headingLevel: 'b' | 'h1' }) {
@@ -388,10 +516,13 @@ function Hero({ place = 'PULIVENDLA', eyebrow = 'WELCOME TO OUR SCHOOL', heading
     const timer = window.setInterval(() => setIndex((current) => (current + 1) % HERO_PHOTOS.length), 3000);
     return () => window.clearInterval(timer);
   }, []);
-  return <section id="top" className="overflow-hidden bg-white">
+  /* No longer full-bleed: the banner sits in its own framed window, inset
+     from the page edges and capped well short of the viewport, with a white
+     mount and a hairline border around it. */
+  return <section id="top" className="bg-transparent pt-4 md:pt-6">
     <Title className="sr-only">{`Sree Vivekananda Educational Society — ${place}`}</Title>
-    {/* Height tracks a 1600×470 ratio, capped at 620px. */}
-    <div className="relative aspect-[1600/530] max-h-[620px]">
+    {/* Height tracks the banners' own 1600×530 ratio, capped at 700px. */}
+    <div className="relative mx-auto aspect-[1600/530] max-h-[700px] w-[min(1320px,calc(100%-40px))] overflow-hidden rounded-2xl border-[6px] border-white shadow-[0_14px_38px_rgba(31,40,56,.20)] ring-1 ring-[#1C2A37]/20">
       {HERO_PHOTOS.map((photo, i) => <div key={photo.src} className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${i === index ? 'opacity-100' : 'opacity-0'}`} aria-hidden={i !== index || undefined}>
         <HeroPhoto photo={photo} />
       </div>)}
@@ -403,48 +534,78 @@ function Heading({ title, accent }: { title?: string; accent?: string }) {
   return <div className="reveal flex flex-col items-center"><h2 className="section-heading text-center text-[clamp(1.85rem,3.3vw,2.5rem)]">{title}{title && ' '}{accent && <em>{accent}</em>}</h2><div className="ornament mt-2"><span className="ornament-mark">◆</span></div></div>;
 }
 
+/* The three branch cards on the home page. `photo` is a stand-in until each
+   branch's own campus photograph exists — the slugs match `BRANCHES` below,
+   which is what the routes are built from. */
+const BRANCH_CARDS = [
+  { slug: 'shivalayam-street', streetName: 'Shivalayam Street', photo: '/campus-courtyard.jpg' },
+  { slug: 'brahmanapalli-road', streetName: 'Brahmanapalli Road', photo: '/smartclass.jpeg' },
+  { slug: 'parnapalli-road', streetName: 'Parnapalli Road', photo: '/athletics-field.jpg' },
+] as const;
+
 function Intro() {
   return <section id="about" className="relative overflow-hidden py-5 md:py-7"><div className="absolute left-0 top-0 h-16 w-16 border-l-[3px] border-t-[3px] border-[#0F4C5C] opacity-70" />
-    <PinnedIcon file="sun-svgrepo-com.svg" className="right-3 top-2 md:right-5 md:top-3" widthRem={4} />
-    <PinnedIcon file="earth-svgrepo-com.svg" className="right-1 top-[24%] md:right-3" widthRem={4.5} />
+    <SectionIcons pins={PINNED_ICONS.about} />
     <div className="container-wide grid gap-7 md:grid-cols-[1fr_1fr] md:items-center">
     <div className="reveal"><p className="max-w-[470px] text-[17px] leading-6 text-black"><span className="font-extrabold uppercase">I</span>gniting minds, shaping futures. Join us for academic excellence, character building, and holistic development. Our classrooms blend structured, CBSE-aligned learning with hands-on activities that turn curiosity into confidence, while dedicated teachers mentor every child from their very first day through each milestone that follows. From Pre-School through High-School, we build a foundation of strong values, critical thinking and real-world skills so every student leaves prepared to lead — in the classroom and far beyond it.</p></div>
     <div className="reveal relative mx-auto aspect-[1254/1030] w-full max-w-[460px] overflow-hidden rounded-3xl border-[6px] border-white bg-white shadow-[0_10px_26px_rgba(31,40,56,.18)] ring-1 ring-[#1C2A37]/25"><img src="/vivekananda.png" alt="Educate and raise the masses, and thus alone a nation is possible — Swami Vivekananda" className="h-full w-full rounded-2xl object-cover" data-testid="img-about" /></div>
   </div>
   <div className="container-wide mt-10 md:mt-14">
     <div className="reveal text-center mb-2">
-      <h3 className="text-[20px] font-bold text-[#123A5E]">Branches in Pulivendla, Kadapa District, Andhra Pradesh</h3>
+      <h3 className="text-[20px] font-bold text-[#123A5E]">Campuses in Pulivendla, Kadapa District, Andhra Pradesh</h3>
       <div className="ornament mt-2 flex justify-center"><span className="ornament-mark">◆</span></div>
-      <p className="mt-3 text-[15px] text-[#3F5771] font-medium text-center">Sree Swamy Vivekananda School — Three Branches, One Vision</p>
+      <p className="mt-3 text-[15px] text-[#3F5771] font-medium text-center">Sree Swamy Vivekananda School — Three Campuses, One Vision</p>
     </div>
     <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-      <Link href="/branch/shivalayam-street" className="reveal flex flex-col items-center gap-3 cursor-pointer rounded-2xl p-4 transition hover:bg-white/70 hover:shadow-md group">
-        <img src="/logo.jpeg" alt="School logo" className="h-16 w-16 rounded-full object-cover shadow group-hover:scale-105 transition-transform" />
+      {BRANCH_CARDS.map(({ slug, streetName, photo }) => <Link key={slug} href={`/branch/${slug}`} className="reveal flex flex-col items-center gap-3 cursor-pointer rounded-2xl p-4 transition hover:bg-white/70 hover:shadow-md group" data-testid={`link-branch-card-${slug}`}>
+        {/* Stand-in for each branch's own photograph — swap `photo` for the
+            real campus picture once it's shot; the frame is already the
+            right shape for it. */}
+        <div className="w-full max-w-[240px] overflow-hidden rounded-xl border-[4px] border-white bg-[#EAF1F9] shadow-[0_8px_20px_rgba(31,40,56,.14)] ring-1 ring-[#1C2A37]/10">
+          <img src={photo} alt={`${streetName} campus`} className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+        </div>
+        <img src="/logo.jpeg" alt="School logo" className="-mt-8 h-16 w-16 rounded-full border-[3px] border-white object-cover shadow group-hover:scale-105 transition-transform" />
         <div>
           <p className="font-bold text-[#0F4C5C] text-[16px]">SREE SWAMY VIVEKANANDA SCHOOL</p>
-          <p className="mt-1 text-[15px]"><span className="font-bold text-[#123A5E] text-[17px]">Shivalayam Street</span>,<br /><span className="text-black/70">Pulivendla, Kadapa District,<br />Andhra Pradesh</span></p>
-          <p className="mt-2 text-[13px] font-semibold text-[#2E6A9E] flex items-center justify-center gap-1">View Branch <ArrowRight size={13} /></p>
+          <p className="mt-1 text-[15px]"><span className="font-bold text-[#123A5E] text-[17px]">{streetName}</span>,<br /><span className="text-black/70">Pulivendla, Kadapa District,<br />Andhra Pradesh</span></p>
+          <p className="mt-2 text-[13px] font-semibold text-[#2E6A9E] flex items-center justify-center gap-1">View Campus <ArrowRight size={13} /></p>
         </div>
-      </Link>
-      <Link href="/branch/brahmanapalli-road" className="reveal flex flex-col items-center gap-3 cursor-pointer rounded-2xl p-4 transition hover:bg-white/70 hover:shadow-md group">
-        <img src="/logo.jpeg" alt="School logo" className="h-16 w-16 rounded-full object-cover shadow group-hover:scale-105 transition-transform" />
-        <div>
-          <p className="font-bold text-[#0F4C5C] text-[16px]">SREE SWAMY VIVEKANANDA SCHOOL</p>
-          <p className="mt-1 text-[15px]"><span className="font-bold text-[#123A5E] text-[17px]">Brahmanapalli Road</span>,<br /><span className="text-black/70">Pulivendla, Kadapa District,<br />Andhra Pradesh</span></p>
-          <p className="mt-2 text-[13px] font-semibold text-[#2E6A9E] flex items-center justify-center gap-1">View Branch <ArrowRight size={13} /></p>
-        </div>
-      </Link>
-      <Link href="/branch/parnapalli-road" className="reveal flex flex-col items-center gap-3 cursor-pointer rounded-2xl p-4 transition hover:bg-white/70 hover:shadow-md group">
-        <img src="/logo.jpeg" alt="School logo" className="h-16 w-16 rounded-full object-cover shadow group-hover:scale-105 transition-transform" />
-        <div>
-          <p className="font-bold text-[#0F4C5C] text-[16px]">SREE SWAMY VIVEKANANDA SCHOOL</p>
-          <p className="mt-1 text-[15px]"><span className="font-bold text-[#123A5E] text-[17px]">Parnapalli Road</span>,<br /><span className="text-black/70">Pulivendla, Kadapa District,<br />Andhra Pradesh</span></p>
-          <p className="mt-2 text-[13px] font-semibold text-[#2E6A9E] flex items-center justify-center gap-1">View Branch <ArrowRight size={13} /></p>
-        </div>
-      </Link>
+      </Link>)}
     </div>
   </div>
   </section>;
+}
+
+/* ───────────────────────────── SCHOOL LIFE ───────────────────────────── */
+/* Four sides of the day beyond the timetable. `image` is a stand-in from
+   the existing photo library — swap for real ones as they're shot. */
+const SCHOOL_LIFE = [
+  { image: '/athletics-field.jpg', title: 'Sports & Games', copy: 'Athletics, cricket and team games on our own grounds, with inter-house meets through the year so every child gets a turn to compete, not just watch.' },
+  { image: '/making-lab.jpg', title: 'Clubs & Making', copy: 'Science, robotics and craft clubs where an idea gets built rather than only written about — the making lab is open beyond lesson time.' },
+  { image: '/campus-courtyard.jpg', title: 'Arts & Culture', copy: 'Music, dance, drawing and elocution, rehearsed properly and performed in front of a real audience at our annual day and cultural evenings.' },
+  { image: '/smartclass.jpeg', title: 'Events & Celebrations', copy: 'Festivals, national days, science fairs and field trips — the occasions that turn a set of classmates into a year group who remember it.' },
+] as const;
+
+/* Two by two, each photograph in the site's gallery orb with its words
+   beside it rather than beneath. The orb is `GalleryOrb` itself, so these
+   click through to the lightbox and carry the same spinning ring as the
+   circles in Facilities and the Gallery; the fixed-width wrapper is what
+   holds it to a size that leaves room for the text alongside. */
+function SchoolLife() {
+  return <section id="school-life" className="relative py-5 md:py-7"><div className="container-wide">
+    <Heading title="School" accent="Life" />
+    <div className="mx-auto mt-8 grid max-w-[1020px] gap-x-5 gap-y-11 sm:grid-cols-2">
+      {SCHOOL_LIFE.map(({ image, title, copy }, index) => <div key={title} className="reveal flex flex-col items-center gap-4 text-center sm:flex-row sm:items-center sm:gap-4 sm:text-left" data-testid={`card-school-life-${index + 1}`}>
+        <div className="w-[235px] shrink-0">
+          <GalleryOrb src={image} alt={title} colour={ORB_COLOURS[index % ORB_COLOURS.length]} spin={index * 47} />
+        </div>
+        <div className="flex-1">
+          <h3 className="font-sans text-[17px] font-semibold leading-snug text-[#123A5E]">{title}</h3>
+          <p className="mt-2 text-[13.5px] leading-[1.55] text-black/75">{copy}</p>
+        </div>
+      </div>)}
+    </div>
+  </div></section>;
 }
 
 type Programme = { name: string; image: string; copy: string };
@@ -468,8 +629,9 @@ const resultImages = [
    to cover would cut its bottom row of names off; the others fit closely
    enough that `cover` reads as a clean fill. */
 function ResultCard({ src, alt, caption, contain = false }: { src: string; alt: string; caption: string; contain?: boolean }) {
+  const openLightbox = useLightbox();
   return <figure className="flex flex-col items-center gap-4">
-    <button type="button" onClick={() => window.open(src, '_blank')} className="group block aspect-[4/3] w-full overflow-hidden rounded-2xl border-[6px] border-white shadow-[0_10px_30px_rgba(31,40,56,.16)] ring-1 ring-[#1C2A37]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0F4C5C]" data-testid="button-result-card">
+    <button type="button" onClick={() => openLightbox(src, alt)} className="group block aspect-[4/3] w-full overflow-hidden rounded-2xl border-[6px] border-white shadow-[0_10px_30px_rgba(31,40,56,.16)] ring-1 ring-[#1C2A37]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0F4C5C]" data-testid="button-result-card">
       <img src={src} alt={alt} className={`h-full w-full transition-transform duration-500 group-hover:scale-105 ${contain ? 'object-contain' : 'object-cover object-top'}`} loading="lazy" />
     </button>
     <figcaption className="max-w-[260px] text-center text-[15px] font-semibold leading-6 text-[#0F4C5C] sm:text-[16px]">{caption}</figcaption>
@@ -478,9 +640,7 @@ function ResultCard({ src, alt, caption, contain = false }: { src: string; alt: 
 
 function Results() {
   return <section id="results" className="relative py-6 md:py-9">
-    <PinnedIcon file="cup-svgrepo-com.svg" className="right-1 top-[42%] md:right-3" widthRem={4.5} />
-    <PinnedIcon file="star-svgrepo-com.svg" className="left-1 top-[36%] md:left-3" widthRem={4} />
-    <PinnedIcon file="rocket-svgrepo-com.svg" className="left-1 top-[50%] md:left-3" widthRem={4.5} />
+    <SectionIcons pins={PINNED_ICONS.results} />
     <div className="container-wide"><Heading title="SSC" accent="RESULTS 2026" /><p className="reveal mx-auto mt-4 max-w-[620px] text-center text-[18px] leading-7 text-black">Best in standards, first in results — proud of every student who made this year's SSC results shine.</p><div className="mx-auto mt-8 grid max-w-[1200px] grid-cols-1 gap-x-8 gap-y-9 sm:grid-cols-3">{resultImages.map((item, index) => <div key={item.src} className="reveal" data-testid={`card-result-${index + 1}`}><ResultCard src={item.src} alt={item.caption} caption={item.caption} contain={item.contain} /></div>)}</div></div></section>;
 }
 
@@ -546,50 +706,28 @@ function BusRoutes() {
   </div>;
 }
 
-/* One pinned icon per specific card rather than the section as a whole —
-   `undefined` for cards that don't get one. `left` puts it just outside the
-   circle's own footprint on the card's left edge; `right` mirrors that. */
-const FACILITY_PINS: Record<number, { file: string; side: 'left' | 'right' }> = {
-  1: { file: 'laptop-svgrepo-com.svg', side: 'right' }, // Smart Classrooms
-  2: { file: 'books-svgrepo-com.svg', side: 'left' }, // CBSE
-  3: { file: 'books-svgrepo-com.svg', side: 'right' }, // IIT-JEE
-};
-
-/* Lion, football (physical-education) and painting (paint-palette) sit in
-   the empty centre gutter between the two grid columns rather than pinned to
-   an edge — `left-1/2 -translate-x-1/2` centres each on the grid's own
-   midline, which is also the screen's horizontal centre since the grid is
-   itself centred (`mx-auto` inside `container-wide`). A small random jitter
-   on the left offset keeps the three from lining up in a rigid column. */
-function centreJitterPct() {
-  return Math.random() * 10 - 5;
-}
-
+/* All four facilities stand in a single row now, which leaves no centre
+   gutter and no room beside a card for a per-card icon — at four columns a
+   pin hung off a card's edge would sit on top of its own circle. So the
+   decorative icons hang off the section instead, two down each side, clear
+   of the row entirely. */
 function Facilities() {
   return <section id="media" className="relative py-5 md:py-7">
-    <PinnedIcon file="lion-svgrepo-com.svg" className="left-1 top-[24%] md:left-3" widthRem={3.5} />
+    <SectionIcons pins={PINNED_ICONS.facilities} />
     <div className="container-wide">
     <Heading accent="Facilities" />
-    <div className="relative mx-auto mt-8 grid max-w-[900px] grid-cols-2 gap-x-6 gap-y-10 sm:gap-x-10 sm:gap-y-12">
-      {/* Centred via `margin-left: calc(...)` rather than the usual
-          `-translate-x-1/2` utility — the float animation drives `transform`
-          itself, which would replace (not add to) a transform-based offset
-          the moment the animation is actually running. */}
-      <PinnedIcon file="physical-education-svgrepo-com.svg" className="top-[42%] left-1/2" widthRem={3.5} style={{ marginLeft: `calc(-1.75rem + ${centreJitterPct()}%)` }} />
-      <PinnedIcon file="paint-palette-palette-svgrepo-com.svg" className="top-[78%] left-1/2" widthRem={3.5} style={{ marginLeft: `calc(-1.75rem + ${centreJitterPct()}%)` }} />
+    <div className="relative mx-auto mt-8 grid max-w-[1000px] grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-4 sm:gap-x-6 sm:gap-y-12">
       {/* Not a flex wrapper: `GalleryOrb`'s own figure needs to be a normal
           block box so its `w-full` button resolves against the full column
           width — inside a flex parent with `items-center` it would shrink to
           content instead and the orb would render tiny. */}
-      {facilities.map(({ image, contain, title, copy }, index) => {
-        const pin = FACILITY_PINS[index];
-        return <div key={title} className="reveal relative text-center" data-testid={`card-facility-${index + 1}`}>
-          {pin && <PinnedIcon file={pin.file} className={`top-1/2 ${pin.side === 'left' ? '-left-4 md:-left-8' : '-right-4 md:-right-8'}`} widthRem={4} style={{ marginTop: '-2rem' }} />}
+      {facilities.map(({ image, contain, title, copy }, index) => (
+        <div key={title} className="reveal relative text-center" data-testid={`card-facility-${index + 1}`}>
           <GalleryOrb src={image!} alt={title} colour={ORB_COLOURS[index % ORB_COLOURS.length]} spin={index * 47} contain={contain} />
-          <h3 className="mt-4 font-sans text-[14px] font-medium leading-[1.25] text-black sm:text-[19px] sm:leading-snug">{title}</h3>
-          <p className="mt-1.5 mx-auto max-w-[280px] text-[11.5px] leading-[1.4] text-black/75 sm:text-[13.5px] sm:leading-[1.5]">{copy}</p>
-        </div>;
-      })}
+          <h3 className="mt-4 font-sans text-[14px] font-medium leading-[1.25] text-black sm:text-[16px] sm:leading-snug">{title}</h3>
+          <p className="mt-1.5 mx-auto max-w-[280px] text-[11.5px] leading-[1.4] text-black/75 sm:text-[12.5px] sm:leading-[1.5]">{copy}</p>
+        </div>
+      ))}
     </div>
   </div></section>;
 }
@@ -620,8 +758,9 @@ function OrbRing({ colour, spin }: { colour: string; spin: number }) {
 }
 
 function GalleryOrb({ src, alt, colour, spin, caption, contain = false }: { src: string; alt: string; colour: string; spin: number; caption?: string; contain?: boolean }) {
+  const openLightbox = useLightbox();
   return <figure className="flex flex-col items-center gap-4">
-    <button type="button" onClick={() => window.open(src, '_blank')} className="group relative block aspect-square w-full max-w-[250px] rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0F4C5C]" data-testid="button-gallery-orb">
+    <button type="button" onClick={() => openLightbox(src, alt)} className="group relative block aspect-square w-full max-w-[250px] rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0F4C5C]" data-testid="button-gallery-orb">
       <span className="absolute inset-[6%] rounded-full bg-white shadow-[0_10px_30px_rgba(31,40,56,.16)]" />
       <span className="absolute inset-[11%] block overflow-hidden rounded-full">
         <img src={src} alt={alt} className={`h-full w-full transition-transform duration-500 group-hover:scale-105 ${contain ? 'object-contain p-4' : 'object-cover'}`} loading="lazy" />
@@ -663,12 +802,38 @@ function StoryVideo() {
   </>;
 }
 
+/* The pool the 5×5 wall of tiles is drawn from — every photograph the site
+   already ships, cycled to fill the grid, since there are fewer distinct
+   pictures than there are squares. */
+const GALLERY_TILE_POOL = [
+  '/making-lab.jpg', '/campus-courtyard.jpg', '/athletics-field.jpg', '/smartclass.jpeg',
+  '/schoolbus.jpeg', '/our-story-poster.jpg', '/cbse.jpeg', '/iit.jpeg',
+  '/results-1.jpeg', '/results-2.jpeg', '/results-3.jpeg', '/swami-vivekananda-quote.jpg',
+  '/hero-cbse-lead.png', '/hero-our-values.jpg', '/hero-learn-today.jpg', '/hero-safe-journeys.jpg',
+  '/vivekananda.png', '/admissions-popup.jpeg', '/admissions.png', '/logo.jpeg',
+] as const;
+
+/* Five across and five down — square, bordered tiles rather than the orbs,
+   and no video. Each opens in the lightbox like every other photograph. */
+function GallerySquares() {
+  const openLightbox = useLightbox();
+  return <div className="mx-auto grid max-w-[1300px] grid-cols-2 gap-5 sm:grid-cols-3 sm:gap-6 md:grid-cols-4 md:gap-8">
+    {Array.from({ length: 25 }, (_, index) => {
+      const src = GALLERY_TILE_POOL[index % GALLERY_TILE_POOL.length];
+      const alt = `School life gallery ${index + 1}`;
+      return <button key={`${src}-${index}`} type="button" onClick={() => openLightbox(src, alt)} className="reveal group aspect-square w-full overflow-hidden rounded-xl border-[4px] border-white bg-[#EAF1F9] shadow-[0_8px_20px_rgba(31,40,56,.14)] ring-1 ring-[#1C2A37]/15 transition hover:shadow-[0_12px_28px_rgba(31,40,56,.22)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0F4C5C]" data-testid={`button-gallery-tile-${index + 1}`}>
+        <img src={src} alt={alt} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+      </button>;
+    })}
+  </div>;
+}
+
 /* `heading` off when the page above already carries the title as its `h1`. */
 /* Video beside a 3-column, 2-row orb grid (six photos), the whole block
    left-aligned within `container-wide` (no `mx-auto`) rather than centred,
    so it sits toward the left of the screen. */
 function Gallery({ heading = true }: { heading?: boolean }) {
-  return <section id="gallery" className="relative overflow-hidden py-5 md:py-7"><div className="absolute right-0 top-20 hero-dots h-24 w-16 opacity-60" /><PinnedIcon file="cricket-svgrepo-com.svg" className="right-1 top-[55%] md:right-3" widthRem={3.5} /><div className="container-wide">{heading && <Heading title="PHOTO" accent="GALLERY" />}<div className="mt-7 grid max-w-[1000px] items-start gap-3 md:grid-cols-[210px_1fr]">
+  return <section id="gallery" className="relative overflow-hidden py-5 md:py-7"><div className="absolute right-0 top-20 hero-dots h-24 w-16 opacity-60" /><SectionIcons pins={PINNED_ICONS.gallery} /><div className="container-wide">{heading && <Heading title="PHOTO" accent="GALLERY" />}<div className="mt-7 grid max-w-[1000px] items-start gap-3 md:grid-cols-[210px_1fr]">
     <div className="reveal relative mt-10 w-full max-w-[210px] overflow-hidden rounded-2xl border-[5px] border-white bg-[#123A5E] shadow-[0_10px_26px_rgba(31,40,56,.2)]"><div className="relative aspect-[9/16] overflow-hidden rounded-xl"><StoryVideo /></div></div>
     {/* Fixed 250px columns instead of `1fr` ones — the orb itself is
         capped at 250px, so a stretchy column left a lot of empty slack
@@ -679,30 +844,99 @@ function Gallery({ heading = true }: { heading?: boolean }) {
   </div></div></section>;
 }
 
-function Testimonials() {
-  const testimonials = [
-    { quote: 'Kudos to the entire team of Vivekananda Concept School for running online classes without compromising on the quality during this pandemic. We are lucky to get the admission for our kids. Kids initially faced a lot of difficulties in coping up with the syllabus and they felt it was too much for them. Slowly, they got settled here and started liking the teaching style, syllabus, and contents. Teachers are helping them in understanding the subjects and also taking extra efforts in teaching Maths and Hindi by conducting extra classes.\n\nOverall, kids love the school and started socializing with the teachers and fellow students. They also helped my kids a lot in learning the missed lessons.', name: 'Murali Krishna' },
-    { quote: 'The teachers at Vivekananda Concept School are very loving and nurturing while providing the guidance and structure my kids need. I have been impressed with the dedication of the staff. Truly impressed.', name: 'Sai Chandrika' },
-  ];
-  const [active, setActive] = useState(0); const [paused, setPaused] = useState(false); const testimonial = testimonials[active];
-  useEffect(() => {
-    if (paused || testimonials.length < 2) return;
-    const timer = window.setInterval(() => setActive(current => (current + 1) % testimonials.length), 7000);
-    return () => window.clearInterval(timer);
-  }, [paused, testimonials.length]);
-  return <section id="blogs" className="py-5 md:py-7"><div className="container-wide"><Heading title="Parent Say" accent="About us" /><div className="relative mx-auto mt-6 max-w-[760px] px-7 text-center sm:px-14" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} aria-roledescription="carousel" aria-live="polite"><Quote className="absolute left-0 top-0 h-7 w-7 text-[#0F4C5C] sm:h-10 sm:w-10" fill="currentColor" /><Quote className="absolute right-0 top-0 h-7 w-7 rotate-180 text-[#0F4C5C] sm:h-10 sm:w-10" fill="currentColor" /><div key={active} className="testimonial-fade"><blockquote className="whitespace-pre-line text-[16px] leading-[1.55] text-black" data-testid="text-testimonial">{testimonial.quote}</blockquote><p className="mt-4 text-right text-[18px] font-semibold text-[#0F4C5C]" data-testid="text-testimonial-name">{testimonial.name}</p></div><PinnedIcon file="earth-svgrepo-com.svg" className="-right-9 bottom-6 md:-right-16 md:bottom-8" widthRem={3.5} /><div className="absolute -right-2 bottom-4 hidden h-20 w-14 rounded-[50%] bg-gradient-to-br from-[#0F4C5C] via-white to-[#1F2838] md:block" /></div></div></section>;
-}
+/* The "Parent Say About Us" section lives in `src/testimonials.tsx` now —
+   off the site, kept for whenever it's wanted back. */
 
 function Admissions({ onEnquire }: { onEnquire: () => void }) {
-  return <section id="career" className="py-4 text-center"><button onClick={onEnquire} className="rounded-full border-2 border-[#0F4C5C] px-10 py-5 text-base font-semibold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white" data-testid="button-admissions-enquiry">START YOUR ADMISSION ENQUIRY <ArrowRight className="ml-2 inline" size={20} /></button></section>;
+  return <section id="career" className="py-4 text-center"><button onClick={onEnquire} className="rounded-full border-2 border-[#0F4C5C] px-10 py-5 text-base font-semibold text-[#0F4C5C] hover:bg-[#0F4C5C] hover:text-white" data-testid="button-admissions-enquiry">CONTACT US <ArrowRight className="ml-2 inline" size={20} /></button></section>;
 }
 
 /* `branchLabel`/`branchAddress` let a branch page swap in its own street
    address here instead of the head-office one — the map link is rebuilt
    from whichever address is showing, so it always points at the right pin. */
+/* One row of the Get In Touch column: a round tinted icon chip and the line
+   of text beside it, as a link when there's somewhere to go. */
+function FooterContact({ icon, children, href, external }: { icon: ReactNode; children: ReactNode; href?: string; external?: boolean }) {
+  const body = <>
+    <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#0F4C5C]/10 text-[#0F4C5C]">{icon}</span>
+    <span className="text-[13.5px] leading-[1.4] text-[#3F5771]">{children}</span>
+  </>;
+  if (!href) return <div className="flex items-start gap-3">{body}</div>;
+  return <a href={href} {...(external ? { target: '_blank', rel: 'noreferrer' } : {})} className="flex items-start gap-3 transition-colors hover:text-[#0F4C5C] [&:hover>span:last-child]:text-[#0F4C5C]">{body}</a>;
+}
+
+/* Light rather than the old dark texture, and laid out wide rather than
+   tall: the crest sits beside its wordmark instead of above it, and brand,
+   quick links and contact details share one three-column row. Type and
+   spacing are dialled down throughout to keep the whole band short. The
+   floating call widget already carries an ADMISSION ENQUIRY card over this
+   corner of the page, so the footer doesn't repeat one — its enquiry button
+   sits inside Contact Us instead. */
 function Footer({ onEnquire, branchLabel, branchAddress }: { onEnquire: () => void; branchLabel?: string; branchAddress?: string }) {
   const address = branchAddress ?? '3-4-55, Guntha Bazar Rd, near Raja Reddy Hospital, Pulivendla, 516390';
-  return <footer id="contact" className="footer-texture relative overflow-hidden text-white"><div id="disclosure" className="container-wide py-5 md:py-7"><div className="grid gap-5 md:grid-cols-[1.25fr_.8fr_1.25fr]"><div><div className="text-center"><a href="#top" className="mx-auto flex w-max flex-col items-center gap-2 text-white" data-testid="link-logo-footer"><img src="/logo.jpeg" alt="Sree Vivekananda Educational Society logo" className="h-20 w-20 rounded-full border-[3px] border-white object-cover shadow" /><span className="block text-center leading-[1.15]"><b className="block text-[15px] tracking-[.06em]">SREE VIVEKANANDA</b><small className="block text-[11px] tracking-[.18em]">EDUCATIONAL SOCIETY</small><small className="block text-[11px] tracking-[.18em]">PULIVENDLA</small></span></a><small className="mt-2 block text-[11px] tracking-[.13em] text-white uppercase">INSPIRING GROWTH, CREATING LEADER</small><p className="mx-auto mt-3 max-w-[260px] text-center text-[13px] leading-[1.4]">Sree Vivekananda Educational Society, Pulivendla, under the guidance of a dedicated team of educators.</p></div></div><div><h3 className="text-[15px] font-semibold">Helpful Links</h3><div className="mt-3 grid gap-1.5 text-[14px]">{navItems.slice(0, 8).map(([label, href]) => <a key={href} href={href} className="hover:text-[#FFFFFF]" data-testid={`link-footer-${label.toLowerCase().replaceAll(' ', '-')}`}>{label}</a>)}</div></div><div><h3 className="text-[15px] font-semibold">Address</h3>{branchLabel && <p className="mt-3 text-[13px] font-semibold text-white/90" data-testid="text-footer-branch-label">{branchLabel}</p>}<a href="tel:+918500045678" className="mt-3 flex items-center gap-2 text-[14px]" data-testid="link-phone-footer"><Phone size={14} /> +91 85000 45678 / 85004 95678</a><a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`} target="_blank" rel="noreferrer" className="mt-2.5 flex gap-2 text-[14px] leading-[1.4] hover:text-[#FFFFFF]" data-testid="link-address-footer"><MapPin size={15} className="mt-0.5 shrink-0" /> {address}</a><a href="mailto:hello@vivekanandaconcept.school" className="mt-2.5 flex items-center gap-2 text-[14px]" data-testid="link-email-footer"><Mail size={14} /> hello@vivekanandaconcept.school</a><a href="https://www.instagram.com/vcsplvd?igsh=MW00NW1xdWtoY2Q1Mw==" target="_blank" rel="noreferrer" className="mt-2.5 flex items-center gap-2 text-[14px] hover:text-[#FFFFFF]" data-testid="link-instagram-footer"><Instagram size={14} /> Instagram</a><button onClick={onEnquire} className="mt-4 rounded border border-white px-3 py-1.5 text-[12px] font-semibold hover:bg-white hover:text-[#0F4C5C]" data-testid="button-footer-enquiry">ADMISSION ENQUIRY</button></div></div><div className="mt-5 border-t border-white/30 pt-3 text-[12px]">© 2026 Sree Vivekananda Educational Society · Mandatory Disclosure</div></div></footer>;
+  return <footer id="contact" className="relative overflow-hidden border-t border-[#E4EBF3] bg-gradient-to-b from-white to-[#F5F9FC] text-[#123A5E]">
+    <DotGrid className="right-[4%] top-6 hidden h-16 w-20 opacity-70 lg:block" />
+    <div id="disclosure" className="container-hero relative z-10 py-5 md:py-6">
+      {/* Brand, quick links and contact details on one line, with real air
+          between them — the wider `container-hero` (1400px against
+          `container-wide`'s 1024px) is what buys room for both the gaps and
+          the two-across contact block. */}
+      <div className="grid gap-8 md:grid-cols-[1fr_auto_auto] md:items-start md:justify-between md:gap-16 lg:gap-24">
+
+        <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-center sm:text-left">
+          <a href="#top" className="shrink-0" data-testid="link-logo-footer">
+            <img src="/logo.jpeg" alt="Sree Vivekananda Educational Society logo" className="h-[104px] w-[104px] rounded-full border-4 border-white object-cover shadow-[0_8px_22px_rgba(31,40,56,.2)] ring-1 ring-[#1C2A37]/10" />
+          </a>
+          <div>
+            <b className="block font-round text-[30px] font-extrabold leading-tight tracking-[.05em] text-[#123A5E]">SREE VIVEKANANDA</b>
+            <small className="mt-1 block text-[14px] font-semibold tracking-[.18em] text-[#5A7B99]">EDUCATIONAL SOCIETY · PULIVENDLA</small>
+            <span className="mx-auto mt-2.5 block h-[3px] w-10 rounded-full bg-[#0F4C5C]/60 sm:mx-0" aria-hidden="true" />
+            <p className="mt-2.5 font-display text-[18px] italic leading-[1.4] text-[#3F5771]">Inspiring Growth, Creating Leader</p>
+          </div>
+        </div>
+
+        {/* Two columns of links: one column of six would stand taller than
+            the two panels either side of it. */}
+        <div className="text-center md:text-left">
+          <h3 className="text-[13px] font-bold tracking-[.16em] text-[#123A5E]">QUICK LINKS</h3>
+          <div className="mx-auto mt-3 grid w-max grid-cols-2 gap-x-7 gap-y-2 text-left md:mx-0">
+            {navItems.map(([label, href]) => <a key={href} href={href} className="group flex items-center gap-1.5 text-[15px] text-[#3F5771] transition-colors hover:text-[#0F4C5C]" data-testid={`link-footer-${label.toLowerCase().replaceAll(' ', '-')}`}>
+              <ChevronRight size={15} className="shrink-0 text-[#0F4C5C] transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+              {label}
+            </a>)}
+          </div>
+        </div>
+
+        {/* Two across rather than a four-tall stack: this column was what
+            set the footer's height. */}
+        <div className="text-center md:text-left">
+          <h3 className="text-[13px] font-bold tracking-[.16em] text-[#123A5E]">CONTACT US</h3>
+          {branchLabel && <p className="mt-2 text-[13px] font-semibold text-[#0F4C5C]" data-testid="text-footer-branch-label">{branchLabel}</p>}
+          {/* Capped rather than `w-max`: the address is long enough that an
+              auto-sized column would stretch this block across the page. */}
+          <div className="mx-auto mt-3 grid w-max gap-x-10 gap-y-3 text-left sm:w-auto sm:max-w-[540px] sm:grid-cols-2 md:mx-0">
+            <FooterContact icon={<Phone size={16} />} href="tel:+918500045678"><span data-testid="link-phone-footer">+91 85000 45678 / 85004 95678</span></FooterContact>
+            <FooterContact icon={<MapPin size={16} />} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`} external><span data-testid="link-address-footer">{address}</span></FooterContact>
+            <FooterContact icon={<Mail size={16} />} href="mailto:hello@vivekanandaconcept.school"><span data-testid="link-email-footer">hello@vivekanandaconcept.school</span></FooterContact>
+            <FooterContact icon={<Instagram size={16} />} href="https://www.instagram.com/vcsplvd?igsh=MW00NW1xdWtoY2Q1Mw==" external><span data-testid="link-instagram-footer">Instagram</span></FooterContact>
+          </div>
+          <button onClick={onEnquire} className="mt-4 rounded-full border-2 border-[#0F4C5C] px-4 py-1.5 text-[12px] font-bold tracking-[.08em] text-[#0F4C5C] transition hover:bg-[#0F4C5C] hover:text-white" data-testid="button-footer-enquiry">ADMISSION ENQUIRY</button>
+        </div>
+      </div>
+
+      <div className="mt-5 flex items-center gap-4">
+        <span className="h-px flex-1 bg-[#123A5E]/15" aria-hidden="true" />
+        <p className="text-center text-[13px] text-[#3F5771]">© 2026 Sree Vivekananda Educational Society · Mandatory Disclosure</p>
+        <span className="h-px flex-1 bg-[#123A5E]/15" aria-hidden="true" />
+      </div>
+    </div>
+
+    {/* Two soft waves washing across the base, behind the content. */}
+    <svg viewBox="0 0 1440 150" preserveAspectRatio="none" className="pointer-events-none absolute inset-x-0 bottom-0 h-[64px] w-full" aria-hidden="true">
+      <path d="M0 78c150-42 310 20 470 30s330-44 500-30 330 62 470 40v32H0z" fill="#DDE8F5" opacity=".55" />
+      <path d="M0 106c170-36 300 16 470 22s340-34 500-22 320 50 470 32v22H0z" fill="#F3DDE4" opacity=".5" />
+    </svg>
+  </footer>;
 }
 
 /* The dotted corner marks on the brand panel are decoration only, so they are drawn with a repeating
@@ -865,13 +1099,20 @@ function PageShell({ title, description, admissionsPopup: withPopup = false, foo
   }, [withPopup]);
   useEffect(() => { document.title = title; const set = (name: string, content: string) => { let meta = document.querySelector(`meta[name="${name}"]`); if (!meta) { meta = document.createElement('meta'); meta.setAttribute('name', name); document.head.appendChild(meta); } meta.setAttribute('content', content); }; set('description', description); }, [title, description]);
   const openEnquiry = () => setModal(true);
-  return <div className="grain relative min-h-[100dvh] overflow-hidden bg-white">
+  /* Whatever photograph is being looked at full-size, or `null`. Every
+     clickable picture on the page reaches this through `LightboxContext`. */
+  const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
+  /* Stable identity so the context value doesn't change on every render — a
+     plain arrow would re-render every consumer each time this shell does. */
+  const openLightboxRef = useRef((src: string, alt: string) => setLightbox({ src, alt }));
+  return <LightboxContext.Provider value={openLightboxRef.current}><div className="grain relative min-h-[100dvh] overflow-hidden bg-white">
     <div className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat" style={{ backgroundImage: "url('/background.jpeg')" }} aria-hidden="true" />
     <WallpaperLayer />
     <div key={location} className="page-reveal relative z-10"><Header onEnquire={openEnquiry} />{children(openEnquiry)}<Footer onEnquire={openEnquiry} branchLabel={footerBranchLabel} branchAddress={footerBranchAddress} /></div>
     <CallFab onEnquire={openEnquiry} />
     {modal && <EnquiryModal onClose={() => setModal(false)} />}{admissionsPopup && <AdmissionsPopup onClose={() => setAdmissionsPopup(false)} onEnquire={openEnquiry} />}
-  </div>;
+    {lightbox && <Lightbox image={lightbox} onClose={() => setLightbox(null)} />}
+  </div></LightboxContext.Provider>;
 }
 
 function BusRoutesPage() {
@@ -887,6 +1128,160 @@ function BusRoutesPage() {
   </PageShell>;
 }
 
+/* ───────────────────────────────── BLOGS ───────────────────────────────── */
+/* Placeholder posts — swap `image`, `date`, `category`, `title`, `excerpt`
+   and `body` for real ones as they're written. `slug` is what `/blogs/:slug`
+   matches on, so keep it URL-safe if a title changes. `body` is an array of
+   paragraphs, read out one `<p>` per entry on the post's own page. */
+const BLOG_POSTS = [
+  {
+    slug: 'lead-curriculum-in-the-classroom',
+    image: '/why-academic-strength.jpg', date: 'August 12, 2026', category: 'Academics',
+    title: 'What the LEAD Curriculum Actually Changes in the Classroom',
+    excerpt: 'A concept a child has built with their own hands sticks in a way a definition copied off a board never does. Here is what an activity-first CBSE classroom looks like on an ordinary Tuesday.',
+    body: [
+      'Walk into a Class VI science lesson here on an ordinary Tuesday and you will not find a teacher reading a definition off the board while thirty children copy it down. You will find groups of four working out, with magnets and a tray of iron filings, which way a field actually bends — and only afterwards being handed the word for it. That order is not an accident. It is the whole idea behind the CBSE-aligned LEAD curriculum: a concept a child has built with their own hands stays with them in a way a definition copied into a notebook rarely does.',
+      'The curriculum runs unbroken from Pre-School through to Class X, which matters more than it sounds. A child who starts with us at three is not handed four different syllabi as they move up — the same activity-first approach, the same assessment rhythm and the same teaching relationships carry through every stage, so nothing has to be relearned from scratch at each transition.',
+      'Board preparation still happens, and happens seriously — but it sits alongside this, not instead of it. From the middle years, IIT-JEE and NEET foundation work runs in parallel with regular board coursework, so a student is never asked to choose between doing well in Class X and being ready for what comes after it.',
+      'None of this replaces a good teacher — it gives one more to work with. Every classroom carries digital boards and audio-visual tools, but the equipment is only useful in the hands of faculty who already know which child needs the concept shown three ways before it lands, and which one only needed to see it once.',
+    ],
+  },
+  {
+    slug: 'behind-every-bus-route',
+    image: '/schoolbus.jpeg', date: 'July 28, 2026', category: 'Safety',
+    title: 'Behind Every Bus Route: How We Keep Pickup and Drop Reliable',
+    excerpt: 'Trained staff, real attendance checks at every stop, and routes reviewed as the town grows — the quiet systems that make a bus route something a parent can stop thinking about.',
+    body: [
+      'For most parents, a school bus is only noticed on the one morning it runs late. That is by design, in a sense — the goal is for pickup and drop to be reliable enough that you stop thinking about it at all. Getting there takes more than a bus and a driver; it takes systems that are boring to describe and easy to take for granted.',
+      'Every route carries trained staff who take a real attendance check at each stop, not a headcount from memory — a child who does not board is flagged the same morning, not discovered missing at the end of the day. Routes themselves are reviewed periodically as Pulivendla grows and new residential areas open up, rather than left to run unchanged for years after the town around them has changed.',
+      'The three main routes — Sivalayam Street, Brahmanapalle Road and Nagarigutta — between them cover the villages and localities most of our families live in. If you are not sure whether a particular street is covered, the bus route search on this site lets you check by typing your area directly rather than reading through a long list.',
+      'None of this is meant to be visible day to day. A parent should be able to send a child to the bus stop in the morning and give it no further thought until the afternoon — that quiet reliability is the actual measure of whether the system is working.',
+    ],
+  },
+  {
+    slug: 'every-child-on-sports-day',
+    image: '/athletics-field.jpg', date: 'July 9, 2026', category: 'School Life',
+    title: 'Why Every Child Gets a Turn on Sports Day, Not Just the Fastest Ones',
+    excerpt: 'Inter-house meets are built so a child who will never win a race still has an event that is theirs. What that does for confidence carries well beyond the athletics field.',
+    body: [
+      'A sports day built only around the fastest runners teaches most children exactly one lesson: that this event is not for them. Ours is built differently on purpose. Inter-house meets run through the year with a wide enough spread of events — relays, throws, team games, activities that reward coordination rather than raw speed — that a child who will never win the 100-metre dash still has something on the calendar that is genuinely theirs.',
+      'That matters for reasons that have very little to do with athletics. A child who competes and loses gracefully, or who finds one event where they are unexpectedly good, carries that experience into how they handle a difficult exam or a tricky friendship later the same term. Confidence built on a field tends not to stay on the field.',
+      'It also changes what "sport" means inside the school day. Athletics and cricket run on our own grounds, coached rather than merely supervised, so a child who shows real aptitude has somewhere for that to go beyond one meet a year.',
+      'None of this is separate from the classroom, either — the same student who found their footing at an inter-house meet is often the one who is easier to reach in a subject they had quietly written themselves off in. A school day built with room to play is not time taken away from learning; more often, it is what makes the rest of the learning possible.',
+    ],
+  },
+  {
+    slug: 'inside-the-making-lab',
+    image: '/making-lab.jpg', date: 'June 21, 2026', category: 'Academics',
+    title: 'Inside the Making Lab: Where an Idea Becomes Something You Can Hold',
+    excerpt: 'Robotics kits, craft materials and an open door beyond lesson time. A look at how the making lab turns science-fair projects from a chore into something students ask to stay back for.',
+    body: [
+      'Ask most students what a "science project" means and you will get a groan — a poster, a diagram copied from somewhere, handed in the night before it is due. The making lab exists to make that the exception rather than the rule. It is stocked with robotics kits, craft materials and simple tools, and — this is the part that actually changes things — it stays open beyond lesson time, so a half-finished idea does not have to wait a week for the next scheduled period.',
+      'What comes out of it varies enormously by age. Younger children tend toward models — a working pulley, a simple circuit that lights a bulb — where the point is simply seeing cause and effect happen under their own hands. Older students take on longer projects: a small robotics build for a science fair, a craft piece that took three sittings to get right.',
+      'The lab is run alongside the clubs programme, so a student with a standing interest in robotics or making is not limited to whatever the syllabus happens to require that term. It is common, once a term settles in, to find the same small group turning up voluntarily after their last period, working on something nobody assigned them.',
+      'That voluntary return is really the measure of whether it is working. A space that only gets used when a project is due is a classroom with different furniture. A space students choose to come back to on their own time is something else entirely.',
+    ],
+  },
+  {
+    slug: 'first-month-parents-guide',
+    image: '/campus-courtyard.jpg', date: 'June 2, 2026', category: 'Community',
+    title: 'A Parent’s Guide to the First Month at Vivekananda Concept School',
+    excerpt: 'What to expect in the settling-in weeks, who to call with a question, and how progress gets shared with you — from a school that would rather you asked early than worried alone.',
+    body: [
+      'The first few weeks at a new school are unsettled for almost every child, and often more so for the parent watching from outside the gate than for the child actually inside it. This is a short guide to what those weeks usually look like here, and who to talk to if something does not feel right.',
+      'Class teachers are deliberately kept with the same group year on year, which means that even in the first week, there is one adult who is building a real picture of your child — who needs drawing out, who needs a quieter corner, who has already made a friend and who is still finding their feet. That teacher is your first call for anything day-to-day, and is easier to reach directly than most parents expect.',
+      'Assessment does not wait for a term-end report. Progress is tracked continuously through the year, so if something needs attention — academic or otherwise — it tends to surface, and get raised with you, well before it would show up on a formal report card. If a first month has gone quietly, that quiet is itself informative.',
+      'The honest answer to "how will I know how it’s going" is: you will hear from us before you have to ask. But asking early is always welcome — a two-minute question in week two is easier for everyone than the same question, grown larger, in week twelve.',
+    ],
+  },
+  {
+    slug: 'continuous-assessment-explained',
+    image: '/smartclass.jpeg', date: 'May 15, 2026', category: 'Academics',
+    title: 'Continuous Assessment, Explained: Why We Don’t Wait for One Big Exam',
+    excerpt: 'A gap caught in week three is a five-minute conversation. The same gap found in week thirty is a crisis. Here is how assessment through the year is meant to work in a child’s favour.',
+    body: [
+      'A single high-stakes exam at the end of a term tells you a great deal about how a child performs under exam conditions on one particular day, and comparatively little about where they actually stand across the months that led up to it. Continuous assessment is our answer to that gap — regular, lower-stakes checks through the year that are meant to catch a problem while it is still small.',
+      'The practical difference is timing. A misunderstood concept caught in week three is a five-minute conversation with a teacher and a slightly different homework set the following week. The same gap, left to compound silently until it surfaces on a term exam in week thirty, has usually become several gaps stacked on top of each other — and a genuine crisis for the student trying to sit that paper.',
+      'This only works if it is paired with straight reporting. Continuous assessment that stays inside the school and only reaches a parent as a single end-of-term number defeats its own purpose. What we find through the year is shared with parents as we find it — including, deliberately, the parts that are harder to hear, because those are the ones most worth acting on early.',
+      'None of this replaces board exams, which remain exactly as serious as they have always been. What it changes is how prepared a student is when they get there — not through a final push of last-minute revision, but because the gaps were closed as they appeared, month after month, long before the exam itself.',
+    ],
+  },
+] as const;
+
+function BlogCard({ post, index }: { post: (typeof BLOG_POSTS)[number]; index: number }) {
+  const openLightbox = useLightbox();
+  return <article className="reveal flex flex-col overflow-hidden rounded-2xl border-[5px] border-white bg-white shadow-[0_10px_26px_rgba(31,40,56,.16)] ring-1 ring-[#1C2A37]/12" data-testid={`card-blog-${index + 1}`}>
+    <button type="button" onClick={() => openLightbox(post.image, post.title)} className="group block aspect-[16/10] w-full overflow-hidden rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0F4C5C]" data-testid={`button-blog-${index + 1}`}>
+      <img src={post.image} alt={post.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+    </button>
+    <div className="flex flex-1 flex-col px-5 pb-5 pt-4">
+      <div className="flex items-center gap-3 text-[12px] font-semibold text-[#0F4C5C]">
+        <span className="rounded-full bg-[#0F4C5C]/10 px-2.5 py-1 tracking-wide">{post.category}</span>
+        <span className="flex items-center gap-1 text-black/55"><Calendar size={13} aria-hidden="true" /> {post.date}</span>
+      </div>
+      <h3 className="mt-3 font-sans text-[17px] font-semibold leading-snug text-black">{post.title}</h3>
+      <p className="mt-2 flex-1 text-[13.5px] leading-[1.55] text-black/75">{post.excerpt}</p>
+      <Link href={`/blogs/${post.slug}`} className="group/link mt-3 flex items-center gap-1.5 text-[13.5px] font-semibold text-[#0F4C5C]" data-testid={`link-blog-read-more-${index + 1}`}>
+        Read More <ArrowRight size={14} className="transition-transform group-hover/link:translate-x-1" aria-hidden="true" />
+      </Link>
+    </div>
+  </article>;
+}
+
+function BlogsPage() {
+  return <PageShell title="Blogs | Sree Vivekananda Educational Society" description="Notes from Sree Vivekananda Educational Society, Pulivendla — on the curriculum, campus life, admissions and what a school day here actually looks like.">
+    {(onEnquire) => <>
+      <section className="pt-8 md:pt-12"><div className="container-wide flex flex-col items-center">
+        <h1 className="section-heading text-center text-[clamp(2rem,3.6vw,2.8rem)]">Blogs</h1>
+        <div className="ornament mt-2"><span className="ornament-mark">◆</span></div>
+        <p className="reveal mx-auto mt-4 max-w-[600px] text-center text-[15px] leading-[1.6] text-black">Notes on the curriculum, campus life and what a school day here actually looks like.</p>
+      </div></section>
+      <section className="py-5 md:py-7"><div className="container-wide">
+        <div className="mx-auto grid max-w-[1200px] gap-7 sm:grid-cols-2 lg:grid-cols-3">
+          {BLOG_POSTS.map((post, index) => <BlogCard key={post.title} post={post} index={index} />)}
+        </div>
+      </div></section>
+      <Admissions onEnquire={onEnquire} />
+    </>}
+  </PageShell>;
+}
+
+/* The full article behind a "Read More" — hero photograph, the same
+   category/date chip as the card, then every paragraph in `body`. Falls
+   through to `NotFound` for a slug that doesn't match any post, the same way
+   `BranchPage` does for an unknown branch. */
+function BlogPostPage({ params }: { params: { slug: string } }) {
+  const post = BLOG_POSTS.find((entry) => entry.slug === params.slug);
+  if (!post) return <NotFound />;
+  return <PageShell title={`${post.title} | Sree Vivekananda Educational Society`} description={post.excerpt}>
+    {(onEnquire) => <>
+      <section className="pt-8 md:pt-12"><div className="container-wide">
+        <Link href="/blogs" className="group inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-[#0F4C5C]" data-testid="link-blog-back">
+          <ChevronRight size={15} className="rotate-180 transition-transform group-hover:-translate-x-1" aria-hidden="true" /> Back to Blogs
+        </Link>
+        <div className="mx-auto mt-5 max-w-[760px]">
+          <div className="flex items-center gap-3 text-[12px] font-semibold text-[#0F4C5C]">
+            <span className="rounded-full bg-[#0F4C5C]/10 px-2.5 py-1 tracking-wide">{post.category}</span>
+            <span className="flex items-center gap-1 text-black/55"><Calendar size={13} aria-hidden="true" /> {post.date}</span>
+          </div>
+          <h1 className="section-heading mt-4 text-[clamp(1.7rem,3.4vw,2.5rem)] leading-[1.15]">{post.title}</h1>
+        </div>
+      </div></section>
+      <section className="mt-7"><div className="container-wide">
+        <div className="reveal mx-auto aspect-[16/9] max-w-[900px] overflow-hidden rounded-2xl border-[6px] border-white shadow-[0_14px_36px_rgba(31,40,56,.18)] ring-1 ring-[#1C2A37]/10">
+          <img src={post.image} alt={post.title} className="h-full w-full object-cover" />
+        </div>
+      </div></section>
+      <section className="py-7 md:py-9"><div className="container-wide">
+        <div className="reveal mx-auto grid max-w-[720px] gap-4">
+          {post.body.map((paragraph) => <p key={paragraph.slice(0, 40)} className="text-[16px] leading-[1.75] text-black">{paragraph}</p>)}
+        </div>
+      </div></section>
+      <Admissions onEnquire={onEnquire} />
+    </>}
+  </PageShell>;
+}
+
 function GalleryPage() {
   return <PageShell title="Photo Gallery | Sree Vivekananda Educational Society" description="Photographs from Sree Vivekananda Educational Society, Pulivendla — the campus, the classrooms, the playing fields and the school buses.">
     {(onEnquire) => <>
@@ -894,7 +1289,7 @@ function GalleryPage() {
         <h1 className="section-heading text-center text-[clamp(2rem,3.6vw,2.8rem)]">Photo <em>Gallery</em></h1>
         <div className="ornament mt-2"><span className="ornament-mark">◆</span></div>
       </div></section>
-      <Gallery heading={false} />
+      <section className="py-5 md:py-7"><div className="container-wide"><GallerySquares /></div></section>
       <Admissions onEnquire={onEnquire} />
     </>}
   </PageShell>;
@@ -902,7 +1297,7 @@ function GalleryPage() {
 
 function Home() {
   return <PageShell title="Vivekananda Concept School | Pulivendla" description="Vivekananda Concept School in Pulivendla offers thoughtful education from Pre-School through High-School." admissionsPopup>
-    {(onEnquire) => <><Hero /><Intro /><Results /><Facilities /><Gallery /><Testimonials /><Admissions onEnquire={onEnquire} /></>}
+    {(onEnquire) => <><Hero /><Intro /><Results /><Facilities /><SchoolLife /><Gallery /><Admissions onEnquire={onEnquire} /></>}
   </PageShell>;
 }
 
@@ -919,7 +1314,7 @@ function BranchGallery({ streetName, images }: { streetName: string; images: rea
           <p className="mt-3 text-[15px] text-[#3F5771]">A look at life on our {streetName} campus.</p>
         </div>
         <div className="mt-9">
-          <GalleryOrbs images={images} label={`${streetName} branch gallery`} className="grid-cols-2 md:grid-cols-4" />
+          <GalleryOrbs images={images} label={`${streetName} campus gallery`} className="grid-cols-2 md:grid-cols-4" />
         </div>
       </div>
     </section>
@@ -929,7 +1324,7 @@ function BranchGallery({ streetName, images }: { streetName: string; images: rea
 function BranchPageTemplate({ branch }: { branch: BranchInfo }) {
   return (
     <PageShell
-      title={`${branch.streetName} Branch | Sree Vivekananda Educational Society`}
+      title={`${branch.streetName} Campus | Sree Vivekananda Educational Society`}
       description={branch.description}
       footerBranchLabel={`Sree Swamy Vivekananda School — ${branch.streetName}`}
       footerBranchAddress={branch.fullAddress}
@@ -976,34 +1371,34 @@ const BRANCH_PHOTOS = ['/campus-courtyard.jpg', '/making-lab.jpg', '/smartclass.
 
 const BRANCHES: Record<string, BranchInfo> = {
   'shivalayam-street': {
-    title: 'Shivalayam Street Branch',
+    title: 'Shivalayam Street Campus',
     streetName: 'Shivalayam Street',
     fullAddress: 'Shivalayam Street, Pulivendla, Kadapa District, Andhra Pradesh – 516390',
-    description: 'Our flagship branch on Shivalayam Street brings CBSE-aligned education from Pre-School through High-School to the heart of Pulivendla, with experienced faculty and a nurturing environment.',
+    description: 'Our flagship campus on Shivalayam Street brings CBSE-aligned education from Pre-School through High-School to the heart of Pulivendla, with experienced faculty and a nurturing environment.',
     about: [
-      'Set in the heart of Pulivendla, the Shivalayam Street campus is where the school began, and it still sets the pace for the branches that followed. Classes run the whole way from Pre-School to High-School, so a child who joins us at three can sit their board exams without ever having to change schools.',
+      'Set in the heart of Pulivendla, the Shivalayam Street campus is where the school began, and it still sets the pace for the campuses that followed. Classes run the whole way from Pre-School to High-School, so a child who joins us at three can sit their board exams without ever having to change schools.',
       'Teaching follows the CBSE-aligned LEAD curriculum, with smart classrooms and activity-based lessons that turn a concept into something a child has actually done rather than only read about. From the middle years, foundation coaching for IIT-JEE and NEET runs alongside board preparation, and assessments through the year mean a gap is closed when it appears rather than discovered the week before an exam.',
     ],
     quote: 'The power of concentration is the only key to the treasure-house of knowledge.',
     gallery: BRANCH_PHOTOS,
   },
   'brahmanapalli-road': {
-    title: 'Brahmanapalli Road Branch',
+    title: 'Brahmanapalli Road Campus',
     streetName: 'Brahmanapalli Road',
     fullAddress: 'Brahmanapalli Road, Pulivendla, Kadapa District, Andhra Pradesh – 516390',
-    description: 'The Brahmanapalli Road branch offers a calm and focused learning environment, serving families across the Brahmanapalli area with dedicated teachers and holistic education.',
+    description: 'The Brahmanapalli Road campus offers a calm and focused learning environment, serving families across the Brahmanapalli area with dedicated teachers and holistic education.',
     about: [
       'The Brahmanapalli Road campus opened to bring the same standard of teaching within reach of families on that side of Pulivendla, and it has kept the unhurried feel of a school where everyone knows everyone. Teachers stay with a class long enough to know each child by name and by temperament — who needs drawing out, who needs slowing down, and who has quietly stopped following.',
-      'The curriculum, the smart classrooms, the assessment pattern and the IIT-JEE and NEET foundation work are the same as at every branch of the society, so a family moving between our campuses finds their child picking up exactly where they left off. Progress is shared with parents honestly and early, not saved up for a report at the end of the year.',
+      'The curriculum, the smart classrooms, the assessment pattern and the IIT-JEE and NEET foundation work are the same as at every campus of the society, so a family moving between our campuses finds their child picking up exactly where they left off. Progress is shared with parents honestly and early, not saved up for a report at the end of the year.',
     ],
     quote: 'To me the very essence of education is concentration of mind, not the collecting of facts.',
     gallery: [...BRANCH_PHOTOS.slice(2), ...BRANCH_PHOTOS.slice(0, 2)],
   },
   'parnapalli-road': {
-    title: 'Parnapalli Road Branch',
+    title: 'Parnapalli Road Campus',
     streetName: 'Parnapalli Road',
     fullAddress: 'Parnapalli Road, Pulivendla, Kadapa District, Andhra Pradesh – 516390',
-    description: 'The Parnapalli Road branch extends our mission of inspiring growth to the Parnapalli area, offering the same high standards of CBSE education and character development.',
+    description: 'The Parnapalli Road campus extends our mission of inspiring growth to the Parnapalli area, offering the same high standards of CBSE education and character development.',
     about: [
       'The Parnapalli Road campus carries our work out to the Parnapalli side of town, so that a good school is a short journey rather than a long one for the families living there. The building was laid out for the way children actually learn: room to move between activities, space for reading and for making things, and classrooms fitted with the same digital boards and audio-visual tools used across the society.',
       'Lessons follow the CBSE-aligned LEAD curriculum from Pre-School through High-School, with early foundation coaching for IIT-JEE and NEET for students who want it. Character is taught as deliberately as the subjects are — punctuality, honesty, looking after younger children and finishing what you start are expected here every day.',
@@ -1041,7 +1436,7 @@ function LoadingSplash() {
   </div>;
 }
 
-function Router() { return <RoutedErrorBoundary><Switch><Route path="/" component={Home} /><Route path="/gallery" component={GalleryPage} /><Route path="/bus-routes" component={BusRoutesPage} /><Route path="/branch/:slug" component={BranchPage} /><Route component={NotFound} /></Switch></RoutedErrorBoundary>; }
+function Router() { return <RoutedErrorBoundary><Switch><Route path="/" component={Home} /><Route path="/gallery" component={GalleryPage} /><Route path="/blogs" component={BlogsPage} /><Route path="/blogs/:slug" component={BlogPostPage} /><Route path="/bus-routes" component={BusRoutesPage} /><Route path="/branch/:slug" component={BranchPage} /><Route component={NotFound} /></Switch></RoutedErrorBoundary>; }
 function RoutedErrorBoundary({ children }: { children: ReactNode }) { const [location] = useLocation(); return <ErrorBoundary resetKey={location}>{children}</ErrorBoundary>; }
 function App() { return <QueryClientProvider client={queryClient}><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}><LoadingSplash /><Router /></WouterRouter><Toaster /></TooltipProvider></QueryClientProvider>; }
 export default App;

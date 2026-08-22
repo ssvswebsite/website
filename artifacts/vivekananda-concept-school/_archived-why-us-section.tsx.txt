@@ -1,0 +1,190 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   ARCHIVED — "Why Vivekananda Concept School" section, removed from the
+   home page (App.tsx) on 2026-08-22 at the user's request. Kept here so it
+   can be pasted back in later without having to rewrite it.
+
+   This file is NOT wired into the app or imported anywhere — it won't
+   affect the build. It also isn't standalone: to bring it back, paste these
+   pieces into App.tsx and they'll work as before, since they rely on things
+   already defined there:
+     - `Heading`, `PinnedIcon`, `GalleryOrb`, `ORB_COLOURS` (shared helpers)
+     - icon imports from 'lucide-react': BookOpen, FlaskConical, Award,
+       Presentation, Languages, Users, Eye, MessageCircle, Smile, Baby,
+       ClipboardCheck, TrendingUp, MessageSquare, BarChart3, FileText, Bus,
+       Building2, Clock, Stethoscope, Droplets, Trophy, Palette, Lightbulb,
+       Music, Tent, Heart, Check, Globe2, Handshake, Sprout
+
+   To restore:
+     1. Paste `SCATTER_BANDS`, `ScatterIcons`, `WHY_SCATTER_ICONS`,
+        `WHY_REASONS` and `WhyUs` back into App.tsx (e.g. where they used
+        to live, just above `SchoolLife`).
+     2. Add `<WhyUs />` back into the `Home()` JSX between `<Intro />` and
+        `<Results />`.
+     3. Add `['Why Us', '#why']` back into `navItems` and `headerNavItems`
+        (between 'About Us' and 'Results').
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Left, middle and right thirds of the section. Icons take a band by turn
+   rather than a uniformly random `left`, because uniform random reliably
+   clumps — one draw leaves the middle bare, the next piles four into the
+   right edge. Cycling the bands guarantees all three get their share, and
+   the jitter within each band keeps it from looking like three columns. */
+const SCATTER_BANDS = [
+  { from: 2, span: 24 },   // left
+  { from: 34, span: 28 },  // middle
+  { from: 68, span: 24 },  // right
+] as const;
+
+function ScatterIcons({ files, count = 14 }: { files: readonly string[]; count?: number }) {
+  const [pins] = useState(() => Array.from({ length: count }, (_, index) => {
+    const band = SCATTER_BANDS[index % SCATTER_BANDS.length];
+    return {
+      file: files[index % files.length],
+      /* Kept a little inside the edges so nothing is half-cut by the
+         section's own bounds. */
+      left: band.from + Math.random() * band.span,
+      top: 1.5 + Math.random() * 93,
+      size: 2.6 + Math.random() * 1.5,
+    };
+  }));
+  return <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
+    {pins.map((pin, index) => <PinnedIcon key={`${pin.file}-${index}`} file={pin.file} widthRem={pin.size} style={{ left: `${pin.left}%`, top: `${pin.top}%` }} />)}
+  </div>;
+}
+
+/* The pool the Why section's scatter draws from — add or drop filenames to
+   change what turns up there. */
+/* Order matters: the scatter walks this list from the top, so with a `count`
+   below the list length only the first `count` files ever appear. */
+const WHY_SCATTER_ICONS = [
+  'educate-svgrepo-com.svg', 'star-svgrepo-com.svg', 'books-svgrepo-com.svg',
+  'giraffe-svgrepo-com.svg', 'laptop-svgrepo-com.svg', 'rocket-svgrepo-com.svg',
+  'rainbow-svgrepo-com.svg', 'paint-palette-palette-svgrepo-com.svg', 'bulb-svgrepo-com.svg',
+  'apple-svgrepo-com.svg', 'cup-svgrepo-com.svg', 'earth-svgrepo-com.svg',
+  'physical-education-svgrepo-com.svg',
+] as const;
+
+/* ─────────────────── WHY VIVEKANANDA CONCEPT SCHOOL ─────────────────── */
+/* Six pillars, each one thing a parent is actually weighing up when they
+   choose a school. `image` is the photograph in the orb — the supplied
+   `why-*.jpg` files, already cut square so the circular crop takes nothing
+   important off. Each of the `points` carries its own line icon (stock
+   lucide, lucide.dev) rather than a repeated tick, so the list reads as a
+   set of pictures. Add or remove entries freely: the rows alternate off the
+   index, so the left/right rhythm keeps itself. */
+const WHY_REASONS = [
+  {
+    image: '/why-academic-strength.jpg',
+    title: 'Academic Strength',
+    copy: 'The CBSE-aligned LEAD curriculum runs from Pre-School to High-School, so a child who joins at three never has to change schools.',
+    points: [
+      { icon: BookOpen, text: 'CBSE-aligned LEAD curriculum, Pre-School to Class X' },
+      { icon: FlaskConical, text: 'Activity-first lessons — concepts done, not just read' },
+      { icon: Award, text: 'IIT-JEE and NEET foundation alongside board prep' },
+      { icon: Presentation, text: 'Smart classrooms with digital boards in every year' },
+      { icon: Languages, text: 'Telugu, Hindi and English taught by subject teachers' },
+    ],
+  },
+  {
+    image: '/why-care.jpg',
+    title: 'Care For Every Child',
+    copy: 'Small enough that teachers know each student by name and temperament — including the one who has quietly stopped following.',
+    points: [
+      { icon: Users, text: 'Teachers who stay with a class year on year' },
+      { icon: Eye, text: 'Attention to the quiet child, not only the loud one' },
+      { icon: MessageCircle, text: 'A mentor a parent can call by name' },
+      { icon: Smile, text: 'A class small enough for every child to be heard' },
+      { icon: Baby, text: 'A settled, unhurried start in the Pre-School years' },
+    ],
+  },
+  {
+    image: '/why-progress.jpg',
+    title: 'Progress You Can See',
+    copy: 'Assessment runs through the year, so a gap is caught the week it opens rather than the week before an exam.',
+    points: [
+      { icon: ClipboardCheck, text: 'Continuous assessment, not one make-or-break exam' },
+      { icon: TrendingUp, text: 'Gaps closed when they appear' },
+      { icon: MessageSquare, text: 'Straight reporting to parents through the year' },
+      { icon: BarChart3, text: 'Progress tracked child by child, not class average' },
+      { icon: FileText, text: 'Written reports you can actually act on' },
+    ],
+  },
+  {
+    image: '/why-safe-campus.jpg',
+    title: 'A Safe, Happy Campus',
+    copy: 'Buses cover every major route with trained staff, and the grounds stay secure and supervised through the whole day.',
+    points: [
+      { icon: Bus, text: 'Trained staff and attendance checks on every route' },
+      { icon: Building2, text: 'Secure, supervised grounds through the day' },
+      { icon: Clock, text: 'A day structured from first bell to last' },
+      { icon: Stethoscope, text: 'Trained first aid on hand through school hours' },
+      { icon: Droplets, text: 'Clean drinking water and washrooms kept to standard' },
+    ],
+  },
+  {
+    image: '/why-beyond-classroom.jpg',
+    title: 'Beyond The Classroom',
+    copy: 'Sport, art and making are timetabled rather than squeezed in — every child gets a turn to compete and to perform.',
+    points: [
+      { icon: Trophy, text: 'Athletics and inter-house meets through the year' },
+      { icon: Palette, text: 'Music, dance and drawing, performed for a real audience' },
+      { icon: Lightbulb, text: 'Science, robotics and craft clubs in the making lab' },
+      { icon: Music, text: 'Annual day and cultural evenings on a real stage' },
+      { icon: Tent, text: 'Field trips and science fairs beyond the campus' },
+    ],
+  },
+  {
+    image: '/why-values.jpg',
+    title: 'Values That Last',
+    copy: 'Character is taught as deliberately as the subjects are, because it is the part of school that outlives the syllabus.',
+    points: [
+      { icon: Heart, text: 'Honesty, kindness and looking after younger children' },
+      { icon: Check, text: 'Punctuality and finishing what you start' },
+      { icon: Globe2, text: 'Responsibility that carries past the school gate' },
+      { icon: Handshake, text: 'Respect for staff, for classmates and for the place' },
+      { icon: Sprout, text: 'Habits that keep growing long after Class X' },
+    ],
+  },
+] as const;
+
+/* Orb one side, its words the other, swapping sides each row. Below `md`
+   everything stacks and centres, which is the only sensible thing at that
+   width. */
+function WhyUs() {
+  return <section id="why" className="relative overflow-hidden py-5 md:py-7">
+    <ScatterIcons files={WHY_SCATTER_ICONS} count={9} />
+    {/* `relative z-10` is what keeps the words above the scattered icons. */}
+    <div className="container-wide relative z-10">
+    <Heading title="Why" accent="Vivekananda Concept School" />
+    <p className="reveal mx-auto mt-3 max-w-[660px] text-center text-[15px] leading-[1.6] text-black">Choosing a school is choosing who your child spends their childhood with. These are the six things we hold ourselves to, and what each means in practice.</p>
+    <div className="mt-7 grid gap-7 md:gap-8">
+      {WHY_REASONS.map(({ image, title, copy, points }, index) => {
+        const flip = index % 2 === 1;
+        const colour = ORB_COLOURS[index % ORB_COLOURS.length];
+        return <div key={title} className={`reveal flex flex-col items-center gap-4 md:gap-8 ${flip ? 'md:flex-row-reverse' : 'md:flex-row'}`} data-testid={`row-why-${index + 1}`}>
+          <div className="relative w-full max-w-[185px] shrink-0">
+            {/* One deliberately-placed icon for this pillar specifically,
+                pinned to its own circle rather than scattered with the rest
+                of the section. */}
+            {title === 'Care For Every Child' && <PinnedIcon file="paint-palette-palette-svgrepo-com.svg" className="-top-6 -right-6 md:-top-8 md:-right-8" widthRem={3.5} />}
+            <GalleryOrb src={image} alt={title} colour={colour} spin={index * 47} />
+          </div>
+          <div className={`flex-1 text-center ${flip ? 'md:text-right' : 'md:text-left'}`}>
+            <h3 className="font-sans text-[17px] font-semibold leading-snug text-black sm:text-[19px]">{title}</h3>
+            <span className={`mx-auto mt-2 block h-[3px] w-11 rounded-full ${flip ? 'md:ml-auto md:mr-0' : 'md:mx-0'}`} style={{ backgroundColor: colour, opacity: .7 }} aria-hidden="true" />
+            <p className="mt-2.5 text-[14px] leading-[1.55] text-black">{copy}</p>
+            {/* Each specific gets its own icon in a small tinted chip. */}
+            <ul className={`mt-3 grid gap-1.5 ${flip ? 'md:justify-items-end' : 'md:justify-items-start'}`}>
+              {points.map(({ icon: PointIcon, text }) => <li key={text} className={`flex items-start gap-2 text-[13px] leading-[1.45] text-black ${flip ? 'md:flex-row-reverse md:text-right' : ''}`}>
+                <span className="mt-px grid h-[22px] w-[22px] shrink-0 place-items-center rounded-full" style={{ backgroundColor: `${colour}1A`, color: colour }}>
+                  <PointIcon size={13} strokeWidth={1.8} aria-hidden="true" />
+                </span>
+                <span>{text}</span>
+              </li>)}
+            </ul>
+          </div>
+        </div>;
+      })}
+    </div>
+  </div></section>;
+}
