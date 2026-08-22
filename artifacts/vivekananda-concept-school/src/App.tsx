@@ -75,12 +75,7 @@ function WallpaperTile() {
    `WallpaperTile` already does per icon. Randomised per mount (each pin
    only mounts once) so nearby icons don't bob in lockstep. */
 function PinnedIcon({ file, className = '', widthRem = 3.5, style }: { file: string; className?: string; widthRem?: number; style?: CSSProperties }) {
-  /* `hidden md:block`: these percentage-positioned icons assume the wide
-     side margins a desktop layout has going spare. Below `md` the page is
-     one narrow text column with no such margin, so the same position lands
-     the icon on top of whatever copy or photo is there instead of beside
-     it — simplest fix is to not render them at phone widths at all. */
-  return <div className={`wallpaper-icon-depth pointer-events-none absolute hidden md:block ${className}`} style={{ width: `${widthRem}rem`, ...style }}>
+  return <div className={`wallpaper-icon-depth pointer-events-none absolute ${className}`} style={{ width: `${widthRem}rem`, ...style }}>
     <img src={`/wallpaper-icons/${file}`} alt="" aria-hidden="true" className="wallpaper-icon-float-a block w-full opacity-65" style={{ animationDuration: `${(14 + Math.random() * 10).toFixed(2)}s`, animationDelay: `${(Math.random() * 6).toFixed(2)}s` }} />
   </div>;
 }
@@ -211,11 +206,7 @@ function WallpaperLayer() {
       window.removeEventListener('scroll', queueMeasure);
     };
   }, []);
-  /* Hidden below `md` for the same reason `PinnedIcon` is: these repeating
-     tile icons are seeded to sit in the wide side margins of a desktop
-     layout, and land on top of the single narrow text column mobile has
-     instead. */
-  return <div ref={layerRef} className="pointer-events-none absolute inset-0 hidden overflow-hidden md:block">
+  return <div ref={layerRef} className="pointer-events-none absolute inset-0 overflow-hidden">
     <div className="flex flex-col">
       {Array.from({ length: 16 }, (_, index) => <WallpaperTile key={index} />)}
     </div>
@@ -530,8 +521,11 @@ function Hero({ place = 'PULIVENDLA', eyebrow = 'WELCOME TO OUR SCHOOL', heading
      mount and a hairline border around it. */
   return <section id="top" className="bg-transparent pt-4 md:pt-6">
     <Title className="sr-only">{`Sree Vivekananda Educational Society — ${place}`}</Title>
-    {/* Height tracks the banners' own 1600×530 ratio, capped at 700px. */}
-    <div className="relative mx-auto aspect-[1600/530] max-h-[700px] w-[min(1320px,calc(100%-40px))] overflow-hidden rounded-2xl border-[6px] border-white shadow-[0_14px_38px_rgba(31,40,56,.20)] ring-1 ring-[#1C2A37]/20">
+    {/* Height tracks the banners' own 1600×530 ratio, capped at 700px. Below
+        `sm` the frame is a taller 2:1 rather than the very wide 1600:530 —
+        at phone widths that ratio left the banner barely 100px tall, so
+        mobile trades a bit of side crop on the photos for real height. */}
+    <div className="relative mx-auto aspect-[2/1] max-h-[700px] w-[calc(100%-16px)] overflow-hidden rounded-2xl border-[6px] border-white shadow-[0_14px_38px_rgba(31,40,56,.20)] ring-1 ring-[#1C2A37]/20 sm:aspect-[1600/530] sm:w-[min(1320px,calc(100%-40px))]">
       {HERO_PHOTOS.map((photo, i) => <div key={photo.src} className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${i === index ? 'opacity-100' : 'opacity-0'}`} aria-hidden={i !== index || undefined}>
         <HeroPhoto photo={photo} />
       </div>)}
@@ -556,7 +550,7 @@ function Intro() {
   return <section id="about" className="relative overflow-hidden py-5 md:py-7"><div className="absolute left-0 top-0 h-16 w-16 border-l-[3px] border-t-[3px] border-[#0F4C5C] opacity-70" />
     <SectionIcons pins={PINNED_ICONS.about} />
     <div className="container-wide grid gap-7 md:grid-cols-[1fr_1fr] md:items-center">
-    <div className="reveal"><p className="max-w-[470px] text-[17px] leading-6 text-black"><span className="font-extrabold uppercase">I</span>gniting minds, shaping futures. Join us for academic excellence, character building, and holistic development. Our classrooms blend structured, CBSE-aligned learning with hands-on activities that turn curiosity into confidence, while dedicated teachers mentor every child from their very first day through each milestone that follows. From Pre-School through High-School, we build a foundation of strong values, critical thinking and real-world skills so every student leaves prepared to lead — in the classroom and far beyond it.</p></div>
+    <div className="reveal"><p className="max-w-[470px] text-[14px] leading-[1.5] text-black sm:text-[17px] sm:leading-6"><span className="font-extrabold uppercase">I</span>gniting minds, shaping futures. Join us for academic excellence, character building, and holistic development. Our classrooms blend structured, CBSE-aligned learning with hands-on activities that turn curiosity into confidence, while dedicated teachers mentor every child from their very first day through each milestone that follows. From Pre-School through High-School, we build a foundation of strong values, critical thinking and real-world skills so every student leaves prepared to lead — in the classroom and far beyond it.</p></div>
     <div className="reveal relative mx-auto aspect-[1254/1030] w-full max-w-[460px] overflow-hidden rounded-3xl border-[6px] border-white bg-white shadow-[0_10px_26px_rgba(31,40,56,.18)] ring-1 ring-[#1C2A37]/25"><img src="/vivekananda.png" alt="Educate and raise the masses, and thus alone a nation is possible — Swami Vivekananda" className="h-full w-full rounded-2xl object-cover" data-testid="img-about" /></div>
   </div>
   <div className="container-wide mt-10 md:mt-14">
@@ -733,8 +727,8 @@ function Facilities() {
       {facilities.map(({ image, contain, title, copy }, index) => (
         <div key={title} className="reveal relative text-center" data-testid={`card-facility-${index + 1}`}>
           <GalleryOrb src={image!} alt={title} colour={ORB_COLOURS[index % ORB_COLOURS.length]} spin={index * 47} contain={contain} />
-          <h3 className="mt-4 font-sans text-[14px] font-medium leading-[1.25] text-black sm:text-[16px] sm:leading-snug">{title}</h3>
-          <p className="mt-1.5 mx-auto max-w-[280px] text-[11.5px] leading-[1.4] text-black/75 sm:text-[12.5px] sm:leading-[1.5]">{copy}</p>
+          <h3 className="mt-4 font-sans text-[12px] font-medium leading-[1.2] text-black sm:text-[16px] sm:leading-snug">{title}</h3>
+          <p className="mt-1.5 mx-auto max-w-[280px] text-[10px] leading-[1.35] text-black/75 sm:text-[12.5px] sm:leading-[1.5]">{copy}</p>
         </div>
       ))}
     </div>
@@ -870,11 +864,11 @@ function Admissions({ onEnquire }: { onEnquire: () => void }) {
    of text beside it, as a link when there's somewhere to go. */
 function FooterContact({ icon, children, href, external }: { icon: ReactNode; children: ReactNode; href?: string; external?: boolean }) {
   const body = <>
-    <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#0F4C5C]/10 text-[#0F4C5C]">{icon}</span>
-    <span className="text-[13.5px] leading-[1.4] text-[#3F5771]">{children}</span>
+    <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#0F4C5C]/10 text-[#0F4C5C] sm:h-8 sm:w-8">{icon}</span>
+    <span className="text-[11px] leading-[1.35] text-[#3F5771] sm:text-[13.5px] sm:leading-[1.4]">{children}</span>
   </>;
-  if (!href) return <div className="flex items-start gap-3">{body}</div>;
-  return <a href={href} {...(external ? { target: '_blank', rel: 'noreferrer' } : {})} className="flex items-start gap-3 transition-colors hover:text-[#0F4C5C] [&:hover>span:last-child]:text-[#0F4C5C]">{body}</a>;
+  if (!href) return <div className="flex items-start gap-2 sm:gap-3">{body}</div>;
+  return <a href={href} {...(external ? { target: '_blank', rel: 'noreferrer' } : {})} className="flex items-start gap-2 transition-colors hover:text-[#0F4C5C] [&:hover>span:last-child]:text-[#0F4C5C] sm:gap-3">{body}</a>;
 }
 
 /* Light rather than the old dark texture, and laid out wide rather than
@@ -888,32 +882,35 @@ function Footer({ onEnquire, branchLabel, branchAddress }: { onEnquire: () => vo
   const address = branchAddress ?? '3-4-55, Guntha Bazar Rd, near Raja Reddy Hospital, Pulivendla, 516390';
   return <footer id="contact" className="relative overflow-hidden border-t border-[#E4EBF3] bg-gradient-to-b from-white to-[#F5F9FC] text-[#123A5E]">
     <DotGrid className="right-[4%] top-6 hidden h-16 w-20 opacity-70 lg:block" />
-    <div id="disclosure" className="container-hero relative z-10 py-5 md:py-6">
+    <div id="disclosure" className="container-hero relative z-10 py-3 md:py-6">
       {/* Brand, quick links and contact details on one line, with real air
           between them — the wider `container-hero` (1400px against
           `container-wide`'s 1024px) is what buys room for both the gaps and
-          the two-across contact block. */}
-      <div className="grid gap-8 md:grid-cols-[1fr_auto_auto] md:items-start md:justify-between md:gap-16 lg:gap-24">
+          the two-across contact block. Everything in this band is scaled
+          down hard below `sm`: at the desktop sizes the footer alone was
+          nearly as tall as a whole phone screen. */}
+      <div className="grid gap-4 sm:gap-8 md:grid-cols-[1fr_auto_auto] md:items-start md:justify-between md:gap-16 lg:gap-24">
 
-        <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-center sm:text-left">
+        <div className="flex flex-col items-center gap-2 text-center sm:flex-row sm:gap-4 sm:items-center sm:text-left">
           <a href="#top" className="shrink-0" data-testid="link-logo-footer">
-            <img src="/logo.jpeg" alt="Sree Vivekananda Educational Society logo" className="h-[104px] w-[104px] rounded-full border-4 border-white object-cover shadow-[0_8px_22px_rgba(31,40,56,.2)] ring-1 ring-[#1C2A37]/10" />
+            <img src="/logo.jpeg" alt="Sree Vivekananda Educational Society logo" className="h-14 w-14 rounded-full border-4 border-white object-cover shadow-[0_8px_22px_rgba(31,40,56,.2)] ring-1 ring-[#1C2A37]/10 sm:h-[104px] sm:w-[104px]" />
           </a>
           <div>
-            <b className="block font-round text-[30px] font-extrabold leading-tight tracking-[.05em] text-[#123A5E]">SREE VIVEKANANDA</b>
-            <small className="mt-1 block text-[14px] font-semibold tracking-[.18em] text-[#5A7B99]">EDUCATIONAL SOCIETY · PULIVENDLA</small>
-            <span className="mx-auto mt-2.5 block h-[3px] w-10 rounded-full bg-[#0F4C5C]/60 sm:mx-0" aria-hidden="true" />
-            <p className="mt-2.5 font-display text-[18px] italic leading-[1.4] text-[#3F5771]">Inspiring Growth, Creating Leader</p>
+            <b className="block font-round text-[19px] font-extrabold leading-tight tracking-[.05em] text-[#123A5E] sm:text-[30px]">SREE VIVEKANANDA</b>
+            <small className="mt-1 block text-[10px] font-semibold tracking-[.14em] text-[#5A7B99] sm:text-[14px] sm:tracking-[.18em]">EDUCATIONAL SOCIETY · PULIVENDLA</small>
+            <span className="mx-auto mt-1.5 block h-[3px] w-8 rounded-full bg-[#0F4C5C]/60 sm:mx-0 sm:mt-2.5 sm:w-10" aria-hidden="true" />
+            <p className="mt-1.5 font-display text-[13px] italic leading-[1.3] text-[#3F5771] sm:mt-2.5 sm:text-[18px] sm:leading-[1.4]">Inspiring Growth, Creating Leader</p>
           </div>
         </div>
 
         {/* Two columns of links: one column of six would stand taller than
             the two panels either side of it. */}
         <div className="text-center md:text-left">
-          <h3 className="text-[13px] font-bold tracking-[.16em] text-[#123A5E]">QUICK LINKS</h3>
-          <div className="mx-auto mt-3 grid w-max grid-cols-2 gap-x-7 gap-y-2 text-left md:mx-0">
-            {navItems.map(([label, href]) => <a key={href} href={href} className="group flex items-center gap-1.5 text-[15px] text-[#3F5771] transition-colors hover:text-[#0F4C5C]" data-testid={`link-footer-${label.toLowerCase().replaceAll(' ', '-')}`}>
-              <ChevronRight size={15} className="shrink-0 text-[#0F4C5C] transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+          <h3 className="text-[10px] font-bold tracking-[.14em] text-[#123A5E] sm:text-[13px] sm:tracking-[.16em]">QUICK LINKS</h3>
+          <div className="mx-auto mt-1.5 grid w-max grid-cols-2 gap-x-5 gap-y-1 text-left sm:mt-3 sm:gap-x-7 sm:gap-y-2 md:mx-0">
+            {navItems.map(([label, href]) => <a key={href} href={href} className="group flex items-center gap-1.5 text-[12px] text-[#3F5771] transition-colors hover:text-[#0F4C5C] sm:text-[15px]" data-testid={`link-footer-${label.toLowerCase().replaceAll(' ', '-')}`}>
+              <ChevronRight size={12} className="shrink-0 text-[#0F4C5C] transition-transform group-hover:translate-x-0.5 sm:hidden" aria-hidden="true" />
+              <ChevronRight size={15} className="hidden shrink-0 text-[#0F4C5C] transition-transform group-hover:translate-x-0.5 sm:block" aria-hidden="true" />
               {label}
             </a>)}
           </div>
@@ -922,24 +919,24 @@ function Footer({ onEnquire, branchLabel, branchAddress }: { onEnquire: () => vo
         {/* Two across rather than a four-tall stack: this column was what
             set the footer's height. */}
         <div className="text-center md:text-left">
-          <h3 className="text-[13px] font-bold tracking-[.16em] text-[#123A5E]">CONTACT US</h3>
-          {branchLabel && <p className="mt-2 text-[13px] font-semibold text-[#0F4C5C]" data-testid="text-footer-branch-label">{branchLabel}</p>}
+          <h3 className="text-[10px] font-bold tracking-[.14em] text-[#123A5E] sm:text-[13px] sm:tracking-[.16em]">CONTACT US</h3>
+          {branchLabel && <p className="mt-1 text-[11px] font-semibold text-[#0F4C5C] sm:mt-2 sm:text-[13px]" data-testid="text-footer-branch-label">{branchLabel}</p>}
           {/* Full width on mobile rather than `w-max`: at `w-max` the address
               line's own intrinsic width overrides the viewport, pushing the
               whole block off the right edge instead of wrapping. */}
-          <div className="mx-auto mt-3 grid w-full gap-x-10 gap-y-3 text-left sm:w-auto sm:max-w-[540px] sm:grid-cols-2 md:mx-0">
-            <FooterContact icon={<Phone size={16} />} href="tel:+918500045678"><span data-testid="link-phone-footer">+91 85000 45678 / 85004 95678</span></FooterContact>
-            <FooterContact icon={<MapPin size={16} />} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`} external><span data-testid="link-address-footer">{address}</span></FooterContact>
-            <FooterContact icon={<Mail size={16} />} href="mailto:hello@vivekanandaconcept.school"><span data-testid="link-email-footer">hello@vivekanandaconcept.school</span></FooterContact>
-            <FooterContact icon={<Instagram size={16} />} href="https://www.instagram.com/vcsplvd?igsh=MW00NW1xdWtoY2Q1Mw==" external><span data-testid="link-instagram-footer">Instagram</span></FooterContact>
+          <div className="mx-auto mt-1.5 grid w-full gap-x-10 gap-y-1.5 text-left sm:mt-3 sm:w-auto sm:max-w-[540px] sm:grid-cols-2 sm:gap-y-3 md:mx-0">
+            <FooterContact icon={<Phone size={13} />} href="tel:+918500045678"><span data-testid="link-phone-footer">+91 85000 45678 / 85004 95678</span></FooterContact>
+            <FooterContact icon={<MapPin size={13} />} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`} external><span data-testid="link-address-footer">{address}</span></FooterContact>
+            <FooterContact icon={<Mail size={13} />} href="mailto:hello@vivekanandaconcept.school"><span data-testid="link-email-footer">hello@vivekanandaconcept.school</span></FooterContact>
+            <FooterContact icon={<Instagram size={13} />} href="https://www.instagram.com/vcsplvd?igsh=MW00NW1xdWtoY2Q1Mw==" external><span data-testid="link-instagram-footer">Instagram</span></FooterContact>
           </div>
-          <button onClick={onEnquire} className="mt-4 rounded-full border-2 border-[#0F4C5C] px-4 py-1.5 text-[12px] font-bold tracking-[.08em] text-[#0F4C5C] transition hover:bg-[#0F4C5C] hover:text-white" data-testid="button-footer-enquiry">ADMISSION ENQUIRY</button>
+          <button onClick={onEnquire} className="mt-2.5 rounded-full border-2 border-[#0F4C5C] px-3 py-1 text-[10px] font-bold tracking-[.06em] text-[#0F4C5C] transition hover:bg-[#0F4C5C] hover:text-white sm:mt-4 sm:px-4 sm:py-1.5 sm:text-[12px] sm:tracking-[.08em]" data-testid="button-footer-enquiry">ADMISSION ENQUIRY</button>
         </div>
       </div>
 
-      <div className="mt-5 flex items-center gap-4">
+      <div className="mt-3 flex items-center gap-4 sm:mt-5">
         <span className="h-px flex-1 bg-[#123A5E]/15" aria-hidden="true" />
-        <p className="text-center text-[13px] text-[#3F5771]">© 2026 Sree Vivekananda Educational Society · Mandatory Disclosure</p>
+        <p className="text-center text-[10px] text-[#3F5771] sm:text-[13px]">© 2026 Sree Vivekananda Educational Society · Mandatory Disclosure</p>
         <span className="h-px flex-1 bg-[#123A5E]/15" aria-hidden="true" />
       </div>
     </div>
