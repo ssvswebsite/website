@@ -75,7 +75,12 @@ function WallpaperTile() {
    `WallpaperTile` already does per icon. Randomised per mount (each pin
    only mounts once) so nearby icons don't bob in lockstep. */
 function PinnedIcon({ file, className = '', widthRem = 3.5, style }: { file: string; className?: string; widthRem?: number; style?: CSSProperties }) {
-  return <div className={`wallpaper-icon-depth pointer-events-none absolute ${className}`} style={{ width: `${widthRem}rem`, ...style }}>
+  /* `hidden md:block`: these percentage-positioned icons assume the wide
+     side margins a desktop layout has going spare. Below `md` the page is
+     one narrow text column with no such margin, so the same position lands
+     the icon on top of whatever copy or photo is there instead of beside
+     it — simplest fix is to not render them at phone widths at all. */
+  return <div className={`wallpaper-icon-depth pointer-events-none absolute hidden md:block ${className}`} style={{ width: `${widthRem}rem`, ...style }}>
     <img src={`/wallpaper-icons/${file}`} alt="" aria-hidden="true" className="wallpaper-icon-float-a block w-full opacity-65" style={{ animationDuration: `${(14 + Math.random() * 10).toFixed(2)}s`, animationDelay: `${(Math.random() * 6).toFixed(2)}s` }} />
   </div>;
 }
@@ -206,7 +211,11 @@ function WallpaperLayer() {
       window.removeEventListener('scroll', queueMeasure);
     };
   }, []);
-  return <div ref={layerRef} className="pointer-events-none absolute inset-0 overflow-hidden">
+  /* Hidden below `md` for the same reason `PinnedIcon` is: these repeating
+     tile icons are seeded to sit in the wide side margins of a desktop
+     layout, and land on top of the single narrow text column mobile has
+     instead. */
+  return <div ref={layerRef} className="pointer-events-none absolute inset-0 hidden overflow-hidden md:block">
     <div className="flex flex-col">
       {Array.from({ length: 16 }, (_, index) => <WallpaperTile key={index} />)}
     </div>
@@ -833,14 +842,17 @@ function GallerySquares() {
    left-aligned within `container-wide` (no `mx-auto`) rather than centred,
    so it sits toward the left of the screen. */
 function Gallery({ heading = true }: { heading?: boolean }) {
-  return <section id="gallery" className="relative overflow-hidden py-5 md:py-7"><div className="absolute right-0 top-20 hero-dots h-24 w-16 opacity-60" /><SectionIcons pins={PINNED_ICONS.gallery} /><div className="container-wide">{heading && <Heading title="PHOTO" accent="GALLERY" />}<div className="mt-7 grid max-w-[1000px] items-start gap-3 md:grid-cols-[210px_1fr]">
-    <div className="reveal relative mt-10 w-full max-w-[210px] overflow-hidden rounded-2xl border-[5px] border-white bg-[#123A5E] shadow-[0_10px_26px_rgba(31,40,56,.2)]"><div className="relative aspect-[9/16] overflow-hidden rounded-xl"><StoryVideo /></div></div>
+  return <section id="gallery" className="relative overflow-hidden py-5 md:py-7"><div className="absolute right-0 top-20 hero-dots h-24 w-16 opacity-60" /><SectionIcons pins={PINNED_ICONS.gallery} /><div className="container-wide">{heading && <Heading title="PHOTO" accent="GALLERY" />}<div className="mt-7 grid grid-cols-1 max-w-[1000px] items-start gap-3 md:grid-cols-[210px_1fr]">
+    <div className="reveal relative mx-auto mt-10 w-full max-w-[210px] overflow-hidden rounded-2xl border-[5px] border-white bg-[#123A5E] shadow-[0_10px_26px_rgba(31,40,56,.2)] md:mx-0"><div className="relative aspect-[9/16] overflow-hidden rounded-xl"><StoryVideo /></div></div>
     {/* Fixed 250px columns instead of `1fr` ones — the orb itself is
         capped at 250px, so a stretchy column left a lot of empty slack
         between circles even with a tight `gap`. Fixed columns plus
         `justify-center` mean `gapClassName` is finally the whole visible
-        gap. */}
-    <GalleryOrbs images={gallery} label="School life gallery" className="grid-cols-[repeat(3,250px)] justify-center" gapClassName="gap-x-2 gap-y-6" />
+        gap. Below `md` there isn't room for three 250px columns side by
+        side, so it's a fluid 2-up grid there instead — same as every other
+        orb grid on the page — switching to the fixed 3-across layout once
+        `md` actually has the width for it. */}
+    <GalleryOrbs images={gallery} label="School life gallery" className="grid-cols-2 sm:grid-cols-3 md:grid-cols-[repeat(3,250px)] md:justify-center" gapClassName="gap-x-2 gap-y-6" />
   </div></div></section>;
 }
 
@@ -912,9 +924,10 @@ function Footer({ onEnquire, branchLabel, branchAddress }: { onEnquire: () => vo
         <div className="text-center md:text-left">
           <h3 className="text-[13px] font-bold tracking-[.16em] text-[#123A5E]">CONTACT US</h3>
           {branchLabel && <p className="mt-2 text-[13px] font-semibold text-[#0F4C5C]" data-testid="text-footer-branch-label">{branchLabel}</p>}
-          {/* Capped rather than `w-max`: the address is long enough that an
-              auto-sized column would stretch this block across the page. */}
-          <div className="mx-auto mt-3 grid w-max gap-x-10 gap-y-3 text-left sm:w-auto sm:max-w-[540px] sm:grid-cols-2 md:mx-0">
+          {/* Full width on mobile rather than `w-max`: at `w-max` the address
+              line's own intrinsic width overrides the viewport, pushing the
+              whole block off the right edge instead of wrapping. */}
+          <div className="mx-auto mt-3 grid w-full gap-x-10 gap-y-3 text-left sm:w-auto sm:max-w-[540px] sm:grid-cols-2 md:mx-0">
             <FooterContact icon={<Phone size={16} />} href="tel:+918500045678"><span data-testid="link-phone-footer">+91 85000 45678 / 85004 95678</span></FooterContact>
             <FooterContact icon={<MapPin size={16} />} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`} external><span data-testid="link-address-footer">{address}</span></FooterContact>
             <FooterContact icon={<Mail size={16} />} href="mailto:hello@vivekanandaconcept.school"><span data-testid="link-email-footer">hello@vivekanandaconcept.school</span></FooterContact>
@@ -1051,12 +1064,15 @@ function CallFab({ onEnquire }: { onEnquire: () => void }) {
     observer.observe(header);
     return () => observer.disconnect();
   }, []);
-  /* Scaled back below sm. At the full size this stack is 170px wide and about
-     155px tall — on a 360px handset that is half the width of the screen
-     parked over the content, and it sat on top of the footer links. The inset
-     also clears the iOS home indicator via the safe-area inset. */
+  /* Scaled back below sm, and below that the text cloud drops out entirely,
+     leaving just the round button. Even at its smallest the full stack is
+     124px wide sitting fixed over the content for the whole scroll — on a
+     360–400px phone that's wide enough to permanently cover a photo circle
+     or a line of body text every time one happens to scroll under it. The
+     round button alone is a fifth the width and still does the same job.
+     The inset clears the iOS home indicator via the safe-area inset. */
   return <div className={`fixed bottom-3 right-3 z-40 flex flex-col items-center gap-1 transition-all duration-300 sm:bottom-7 sm:right-7 ${visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-5 opacity-0'}`} style={{ paddingBottom: 'env(safe-area-inset-bottom)' }} aria-hidden={!visible}>
-    <button onClick={onEnquire} className="call-cloud relative block h-[56px] w-[124px] sm:h-[76px] sm:w-[170px]" aria-label="Start your admission enquiry" data-testid="button-call-cloud">
+    <button onClick={onEnquire} className="call-cloud relative hidden sm:block sm:h-[76px] sm:w-[170px]" aria-label="Start your admission enquiry" data-testid="button-call-cloud">
       <svg viewBox="0 0 200 96" preserveAspectRatio="none" className="absolute inset-0 h-full w-full drop-shadow-[0_4px_10px_rgba(31,40,56,.25)]" aria-hidden="true">
         <path d="M24 72 A20 20 0 0 1 30 33 A26 26 0 0 1 78 20 A24 24 0 0 1 124 24 A24 24 0 0 1 168 36 A19 19 0 0 1 176 72 L118 72 L106 93 L96 72 Z" fill="#FFFFFF" stroke="#1C2A37" strokeWidth="3" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
       </svg>
