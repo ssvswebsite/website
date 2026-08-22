@@ -1065,7 +1065,7 @@ function AdmissionsPopup({ onClose, onEnquire }: { onClose: () => void; onEnquir
   }, [onClose]);
   return <div className="fixed inset-0 z-[60] grid place-items-center bg-[#1F2838]/70 p-4" role="dialog" aria-modal="true" aria-label="Admissions open" onClick={onClose}>
     <div className="relative w-full max-w-[620px]" onClick={(event) => event.stopPropagation()}>
-      <img src="/admissions-popup.jpeg" alt="Admissions open at Sree Swamy Vivekananda English Medium School, Pulivendula. Now offering bus services for nearby villages. Call 91822 48728." className="block w-full rounded-xl shadow-2xl" data-testid="img-admissions-popup" />
+      <img src="/admissions-popup.jpeg" alt="Admissions open at Sree Swamy Vivekananda English Medium School, Pulivendula. Now offering bus services for nearby villages." className="block w-full rounded-xl shadow-2xl" data-testid="img-admissions-popup" />
       {/* Centred on the drawn cross rather than corner-anchored, and a fixed
           40px square so it stays a real tap target even when the poster is
           scaled down to a phone's width. */}
@@ -1073,8 +1073,10 @@ function AdmissionsPopup({ onClose, onEnquire }: { onClose: () => void; onEnquir
       <button onClick={() => { onClose(); onEnquire(); }} style={POPUP_HOTSPOTS.enquiry} className="absolute rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white" data-testid="button-admissions-popup-enquiry">
         <span className="sr-only">Start your admission enquiry</span>
       </button>
-      <a href="tel:+919182248728" style={POPUP_HOTSPOTS.phone} className="absolute rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white" data-testid="link-admissions-popup-phone">
-        <span className="sr-only">Call us on 91822 48728</span>
+      {/* The school's main line, as in the footer and header — not the
+          number printed on the poster art, which is a different line. */}
+      <a href="tel:+918500045678" style={POPUP_HOTSPOTS.phone} className="absolute rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white" data-testid="link-admissions-popup-phone">
+        <span className="sr-only">Call us on +91 85000 45678</span>
       </a>
     </div>
   </div>;
