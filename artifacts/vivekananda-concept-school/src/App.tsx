@@ -1042,12 +1042,40 @@ function EnquiryModal({ onClose }: { onClose: () => void }) {
   </div>;
 }
 
+/* The poster artwork draws its own close cross, its own CTA button and its
+   own "Call us" panel, so this renders the image alone — no white mount, no
+   cross of ours over the top of the drawn one, no second button underneath —
+   and lays invisible hit targets over the three drawn controls instead. The
+   percentages are measured off the artwork itself (766×677): the cross sits
+   at 97.9%/2.5%, the CTA runs x 46→97% / y 87→99%, and the phone panel is
+   the bottom-left corner. Being percentages they track the image at any
+   width. Backdrop-click and Escape both close as well, so a mis-tap on the
+   cross can never trap anyone in here. */
+const POPUP_HOTSPOTS = {
+  close: { left: '97.9%', top: '2.5%' },
+  enquiry: { left: '46%', top: '87%', width: '51%', height: '12%' },
+  phone: { left: '2%', top: '84%', width: '36%', height: '15%' },
+} as const;
+
 function AdmissionsPopup({ onClose, onEnquire }: { onClose: () => void; onEnquire: () => void }) {
-  return <div className="fixed inset-0 z-[60] grid place-items-center bg-[#1F2838]/70 p-4" role="dialog" aria-modal="true" onClick={onClose}>
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+  return <div className="fixed inset-0 z-[60] grid place-items-center bg-[#1F2838]/70 p-4" role="dialog" aria-modal="true" aria-label="Admissions open" onClick={onClose}>
     <div className="relative w-full max-w-[620px]" onClick={(event) => event.stopPropagation()}>
-      <button onClick={onClose} className="absolute -right-2 -top-2 z-10 grid h-8 w-8 place-items-center rounded-full bg-white text-[#0F4C5C] shadow-lg" aria-label="Close admissions popup" data-testid="button-close-admissions-popup"><X size={18} /></button>
-      <img src="/admissions-popup.jpeg" alt="Admissions open at Vivekananda Concept School" className="w-full rounded-lg border-4 border-white shadow-2xl" data-testid="img-admissions-popup" />
-      <button onClick={() => { onClose(); onEnquire(); }} className="mt-3 w-full rounded-full bg-[#0F4C5C] py-3 text-xs font-bold text-white" data-testid="button-admissions-popup-enquiry">START YOUR ADMISSION ENQUIRY</button>
+      <img src="/admissions-popup.jpeg" alt="Admissions open at Sree Swamy Vivekananda English Medium School, Pulivendula. Now offering bus services for nearby villages. Call 91822 48728." className="block w-full rounded-xl shadow-2xl" data-testid="img-admissions-popup" />
+      {/* Centred on the drawn cross rather than corner-anchored, and a fixed
+          40px square so it stays a real tap target even when the poster is
+          scaled down to a phone's width. */}
+      <button onClick={onClose} style={{ ...POPUP_HOTSPOTS.close, transform: 'translate(-50%, -50%)' }} className="absolute h-10 w-10 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white" aria-label="Close admissions popup" data-testid="button-close-admissions-popup" />
+      <button onClick={() => { onClose(); onEnquire(); }} style={POPUP_HOTSPOTS.enquiry} className="absolute rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white" data-testid="button-admissions-popup-enquiry">
+        <span className="sr-only">Start your admission enquiry</span>
+      </button>
+      <a href="tel:+919182248728" style={POPUP_HOTSPOTS.phone} className="absolute rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white" data-testid="link-admissions-popup-phone">
+        <span className="sr-only">Call us on 91822 48728</span>
+      </a>
     </div>
   </div>;
 }
