@@ -522,10 +522,13 @@ function Hero({ place = 'PULIVENDLA', eyebrow = 'WELCOME TO OUR SCHOOL', heading
   return <section id="top" className="bg-transparent pt-4 md:pt-6">
     <Title className="sr-only">{`Sree Vivekananda Educational Society — ${place}`}</Title>
     {/* Height tracks the banners' own 1600×530 ratio, capped at 700px. Below
-        `sm` the frame is a taller 2:1 rather than the very wide 1600:530 —
-        at phone widths that ratio left the banner barely 100px tall, so
-        mobile trades a bit of side crop on the photos for real height. */}
-    <div className="relative mx-auto aspect-[2/1] max-h-[700px] w-[calc(100%-16px)] overflow-hidden rounded-2xl border-[6px] border-white shadow-[0_14px_38px_rgba(31,40,56,.20)] ring-1 ring-[#1C2A37]/20 sm:aspect-[1600/530] sm:w-[min(1320px,calc(100%-40px))]">
+        `sm` the frame is a much taller 4:3 rather than the very wide
+        1600:530 — at phone widths that ratio left the banner barely 100px
+        tall, so mobile trades a heavier side crop on the photos for a
+        banner that actually reads as the page's hero, not a strip under
+        the header. Inset is also cut to almost nothing so it runs close to
+        full width. */}
+    <div className="relative mx-auto aspect-[4/3] max-h-[700px] w-[calc(100%-8px)] overflow-hidden rounded-2xl border-[6px] border-white shadow-[0_14px_38px_rgba(31,40,56,.20)] ring-1 ring-[#1C2A37]/20 sm:aspect-[1600/530] sm:w-[min(1320px,calc(100%-40px))]">
       {HERO_PHOTOS.map((photo, i) => <div key={photo.src} className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${i === index ? 'opacity-100' : 'opacity-0'}`} aria-hidden={i !== index || undefined}>
         <HeroPhoto photo={photo} />
       </div>)}
@@ -550,14 +553,14 @@ function Intro() {
   return <section id="about" className="relative overflow-hidden py-5 md:py-7"><div className="absolute left-0 top-0 h-16 w-16 border-l-[3px] border-t-[3px] border-[#0F4C5C] opacity-70" />
     <SectionIcons pins={PINNED_ICONS.about} />
     <div className="container-wide grid gap-7 md:grid-cols-[1fr_1fr] md:items-center">
-    <div className="reveal"><p className="max-w-[470px] text-[14px] leading-[1.5] text-black sm:text-[17px] sm:leading-6"><span className="font-extrabold uppercase">I</span>gniting minds, shaping futures. Join us for academic excellence, character building, and holistic development. Our classrooms blend structured, CBSE-aligned learning with hands-on activities that turn curiosity into confidence, while dedicated teachers mentor every child from their very first day through each milestone that follows. From Pre-School through High-School, we build a foundation of strong values, critical thinking and real-world skills so every student leaves prepared to lead — in the classroom and far beyond it.</p></div>
+    <div className="reveal"><p className="max-w-[470px] text-[12px] leading-[1.45] text-black sm:text-[17px] sm:leading-6"><span className="font-extrabold uppercase">I</span>gniting minds, shaping futures. Join us for academic excellence, character building, and holistic development. Our classrooms blend structured, CBSE-aligned learning with hands-on activities that turn curiosity into confidence, while dedicated teachers mentor every child from their very first day through each milestone that follows. From Pre-School through High-School, we build a foundation of strong values, critical thinking and real-world skills so every student leaves prepared to lead — in the classroom and far beyond it.</p></div>
     <div className="reveal relative mx-auto aspect-[1254/1030] w-full max-w-[460px] overflow-hidden rounded-3xl border-[6px] border-white bg-white shadow-[0_10px_26px_rgba(31,40,56,.18)] ring-1 ring-[#1C2A37]/25"><img src="/vivekananda.png" alt="Educate and raise the masses, and thus alone a nation is possible — Swami Vivekananda" className="h-full w-full rounded-2xl object-cover" data-testid="img-about" /></div>
   </div>
   <div className="container-wide mt-10 md:mt-14">
     <div className="reveal text-center mb-2">
-      <h3 className="text-[20px] font-bold text-[#123A5E]">Campuses in Pulivendla, Kadapa District, Andhra Pradesh</h3>
+      <h3 className="text-[15px] font-bold text-[#123A5E] sm:text-[20px]">Campuses in Pulivendla, Kadapa District, Andhra Pradesh</h3>
       <div className="ornament mt-2 flex justify-center"><span className="ornament-mark">◆</span></div>
-      <p className="mt-3 text-[15px] text-[#3F5771] font-medium text-center">Sree Swamy Vivekananda School — Three Campuses, One Vision</p>
+      <p className="mt-3 text-[12px] text-[#3F5771] font-medium text-center sm:text-[15px]">Sree Swamy Vivekananda School — Three Campuses, One Vision</p>
     </div>
     <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
       {BRANCH_CARDS.map(({ slug, streetName, photo }) => <Link key={slug} href={`/branch/${slug}`} className="reveal flex flex-col items-center gap-3 cursor-pointer rounded-2xl p-4 transition hover:bg-white/70 hover:shadow-md group" data-testid={`link-branch-card-${slug}`}>
@@ -569,9 +572,9 @@ function Intro() {
         </div>
         <img src="/logo.jpeg" alt="School logo" className="-mt-8 h-16 w-16 rounded-full border-[3px] border-white object-cover shadow group-hover:scale-105 transition-transform" />
         <div>
-          <p className="font-bold text-[#0F4C5C] text-[16px]">SREE SWAMY VIVEKANANDA SCHOOL</p>
-          <p className="mt-1 text-[15px]"><span className="font-bold text-[#123A5E] text-[17px]">{streetName}</span>,<br /><span className="text-black/70">Pulivendla, Kadapa District,<br />Andhra Pradesh</span></p>
-          <p className="mt-2 text-[13px] font-semibold text-[#2E6A9E] flex items-center justify-center gap-1">View Campus <ArrowRight size={13} /></p>
+          <p className="font-bold text-[#0F4C5C] text-[12px] sm:text-[16px]">SREE SWAMY VIVEKANANDA SCHOOL</p>
+          <p className="mt-1 text-[11px] sm:text-[15px]"><span className="font-bold text-[#123A5E] text-[13px] sm:text-[17px]">{streetName}</span>,<br /><span className="text-black/70">Pulivendla, Kadapa District,<br />Andhra Pradesh</span></p>
+          <p className="mt-2 text-[11px] font-semibold text-[#2E6A9E] flex items-center justify-center gap-1 sm:text-[13px]">View Campus <ArrowRight size={12} className="sm:hidden" /><ArrowRight size={13} className="hidden sm:block" /></p>
         </div>
       </Link>)}
     </div>
@@ -864,11 +867,11 @@ function Admissions({ onEnquire }: { onEnquire: () => void }) {
    of text beside it, as a link when there's somewhere to go. */
 function FooterContact({ icon, children, href, external }: { icon: ReactNode; children: ReactNode; href?: string; external?: boolean }) {
   const body = <>
-    <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#0F4C5C]/10 text-[#0F4C5C] sm:h-8 sm:w-8">{icon}</span>
-    <span className="text-[11px] leading-[1.35] text-[#3F5771] sm:text-[13.5px] sm:leading-[1.4]">{children}</span>
+    <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#0F4C5C]/10 text-[#0F4C5C] sm:h-8 sm:w-8">{icon}</span>
+    <span className="text-[9.5px] leading-[1.3] text-[#3F5771] sm:text-[13.5px] sm:leading-[1.4]">{children}</span>
   </>;
-  if (!href) return <div className="flex items-start gap-2 sm:gap-3">{body}</div>;
-  return <a href={href} {...(external ? { target: '_blank', rel: 'noreferrer' } : {})} className="flex items-start gap-2 transition-colors hover:text-[#0F4C5C] [&:hover>span:last-child]:text-[#0F4C5C] sm:gap-3">{body}</a>;
+  if (!href) return <div className="flex items-start gap-1.5 sm:gap-3">{body}</div>;
+  return <a href={href} {...(external ? { target: '_blank', rel: 'noreferrer' } : {})} className="flex items-start gap-1.5 transition-colors hover:text-[#0F4C5C] [&:hover>span:last-child]:text-[#0F4C5C] sm:gap-3">{body}</a>;
 }
 
 /* Light rather than the old dark texture, and laid out wide rather than
@@ -882,34 +885,34 @@ function Footer({ onEnquire, branchLabel, branchAddress }: { onEnquire: () => vo
   const address = branchAddress ?? '3-4-55, Guntha Bazar Rd, near Raja Reddy Hospital, Pulivendla, 516390';
   return <footer id="contact" className="relative overflow-hidden border-t border-[#E4EBF3] bg-gradient-to-b from-white to-[#F5F9FC] text-[#123A5E]">
     <DotGrid className="right-[4%] top-6 hidden h-16 w-20 opacity-70 lg:block" />
-    <div id="disclosure" className="container-hero relative z-10 py-3 md:py-6">
+    <div id="disclosure" className="container-hero relative z-10 py-2 md:py-6">
       {/* Brand, quick links and contact details on one line, with real air
           between them — the wider `container-hero` (1400px against
           `container-wide`'s 1024px) is what buys room for both the gaps and
           the two-across contact block. Everything in this band is scaled
-          down hard below `sm`: at the desktop sizes the footer alone was
-          nearly as tall as a whole phone screen. */}
-      <div className="grid gap-4 sm:gap-8 md:grid-cols-[1fr_auto_auto] md:items-start md:justify-between md:gap-16 lg:gap-24">
+          down hard below `sm` — cut again on a second pass, since even the
+          first cut still read as a full phone-screen's worth of footer. */}
+      <div className="grid gap-2.5 sm:gap-8 md:grid-cols-[1fr_auto_auto] md:items-start md:justify-between md:gap-16 lg:gap-24">
 
-        <div className="flex flex-col items-center gap-2 text-center sm:flex-row sm:gap-4 sm:items-center sm:text-left">
+        <div className="flex flex-col items-center gap-1.5 text-center sm:flex-row sm:gap-4 sm:items-center sm:text-left">
           <a href="#top" className="shrink-0" data-testid="link-logo-footer">
-            <img src="/logo.jpeg" alt="Sree Vivekananda Educational Society logo" className="h-14 w-14 rounded-full border-4 border-white object-cover shadow-[0_8px_22px_rgba(31,40,56,.2)] ring-1 ring-[#1C2A37]/10 sm:h-[104px] sm:w-[104px]" />
+            <img src="/logo.jpeg" alt="Sree Vivekananda Educational Society logo" className="h-10 w-10 rounded-full border-4 border-white object-cover shadow-[0_8px_22px_rgba(31,40,56,.2)] ring-1 ring-[#1C2A37]/10 sm:h-[104px] sm:w-[104px]" />
           </a>
           <div>
-            <b className="block font-round text-[19px] font-extrabold leading-tight tracking-[.05em] text-[#123A5E] sm:text-[30px]">SREE VIVEKANANDA</b>
-            <small className="mt-1 block text-[10px] font-semibold tracking-[.14em] text-[#5A7B99] sm:text-[14px] sm:tracking-[.18em]">EDUCATIONAL SOCIETY · PULIVENDLA</small>
-            <span className="mx-auto mt-1.5 block h-[3px] w-8 rounded-full bg-[#0F4C5C]/60 sm:mx-0 sm:mt-2.5 sm:w-10" aria-hidden="true" />
-            <p className="mt-1.5 font-display text-[13px] italic leading-[1.3] text-[#3F5771] sm:mt-2.5 sm:text-[18px] sm:leading-[1.4]">Inspiring Growth, Creating Leader</p>
+            <b className="block font-round text-[15px] font-extrabold leading-tight tracking-[.05em] text-[#123A5E] sm:text-[30px]">SREE VIVEKANANDA</b>
+            <small className="mt-0.5 block text-[8px] font-semibold tracking-[.1em] text-[#5A7B99] sm:mt-1 sm:text-[14px] sm:tracking-[.18em]">EDUCATIONAL SOCIETY · PULIVENDLA</small>
+            <span className="mx-auto mt-1 block h-[2px] w-6 rounded-full bg-[#0F4C5C]/60 sm:mx-0 sm:mt-2.5 sm:h-[3px] sm:w-10" aria-hidden="true" />
+            <p className="mt-1 font-display text-[10px] italic leading-[1.25] text-[#3F5771] sm:mt-2.5 sm:text-[18px] sm:leading-[1.4]">Inspiring Growth, Creating Leader</p>
           </div>
         </div>
 
         {/* Two columns of links: one column of six would stand taller than
             the two panels either side of it. */}
         <div className="text-center md:text-left">
-          <h3 className="text-[10px] font-bold tracking-[.14em] text-[#123A5E] sm:text-[13px] sm:tracking-[.16em]">QUICK LINKS</h3>
-          <div className="mx-auto mt-1.5 grid w-max grid-cols-2 gap-x-5 gap-y-1 text-left sm:mt-3 sm:gap-x-7 sm:gap-y-2 md:mx-0">
-            {navItems.map(([label, href]) => <a key={href} href={href} className="group flex items-center gap-1.5 text-[12px] text-[#3F5771] transition-colors hover:text-[#0F4C5C] sm:text-[15px]" data-testid={`link-footer-${label.toLowerCase().replaceAll(' ', '-')}`}>
-              <ChevronRight size={12} className="shrink-0 text-[#0F4C5C] transition-transform group-hover:translate-x-0.5 sm:hidden" aria-hidden="true" />
+          <h3 className="text-[9px] font-bold tracking-[.1em] text-[#123A5E] sm:text-[13px] sm:tracking-[.16em]">QUICK LINKS</h3>
+          <div className="mx-auto mt-1 grid w-max grid-cols-2 gap-x-4 gap-y-0.5 text-left sm:mt-3 sm:gap-x-7 sm:gap-y-2 md:mx-0">
+            {navItems.map(([label, href]) => <a key={href} href={href} className="group flex items-center gap-1 text-[10px] text-[#3F5771] transition-colors hover:text-[#0F4C5C] sm:gap-1.5 sm:text-[15px]" data-testid={`link-footer-${label.toLowerCase().replaceAll(' ', '-')}`}>
+              <ChevronRight size={10} className="shrink-0 text-[#0F4C5C] transition-transform group-hover:translate-x-0.5 sm:hidden" aria-hidden="true" />
               <ChevronRight size={15} className="hidden shrink-0 text-[#0F4C5C] transition-transform group-hover:translate-x-0.5 sm:block" aria-hidden="true" />
               {label}
             </a>)}
@@ -919,24 +922,24 @@ function Footer({ onEnquire, branchLabel, branchAddress }: { onEnquire: () => vo
         {/* Two across rather than a four-tall stack: this column was what
             set the footer's height. */}
         <div className="text-center md:text-left">
-          <h3 className="text-[10px] font-bold tracking-[.14em] text-[#123A5E] sm:text-[13px] sm:tracking-[.16em]">CONTACT US</h3>
-          {branchLabel && <p className="mt-1 text-[11px] font-semibold text-[#0F4C5C] sm:mt-2 sm:text-[13px]" data-testid="text-footer-branch-label">{branchLabel}</p>}
+          <h3 className="text-[9px] font-bold tracking-[.1em] text-[#123A5E] sm:text-[13px] sm:tracking-[.16em]">CONTACT US</h3>
+          {branchLabel && <p className="mt-1 text-[10px] font-semibold text-[#0F4C5C] sm:mt-2 sm:text-[13px]" data-testid="text-footer-branch-label">{branchLabel}</p>}
           {/* Full width on mobile rather than `w-max`: at `w-max` the address
               line's own intrinsic width overrides the viewport, pushing the
               whole block off the right edge instead of wrapping. */}
-          <div className="mx-auto mt-1.5 grid w-full gap-x-10 gap-y-1.5 text-left sm:mt-3 sm:w-auto sm:max-w-[540px] sm:grid-cols-2 sm:gap-y-3 md:mx-0">
-            <FooterContact icon={<Phone size={13} />} href="tel:+918500045678"><span data-testid="link-phone-footer">+91 85000 45678 / 85004 95678</span></FooterContact>
-            <FooterContact icon={<MapPin size={13} />} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`} external><span data-testid="link-address-footer">{address}</span></FooterContact>
-            <FooterContact icon={<Mail size={13} />} href="mailto:hello@vivekanandaconcept.school"><span data-testid="link-email-footer">hello@vivekanandaconcept.school</span></FooterContact>
-            <FooterContact icon={<Instagram size={13} />} href="https://www.instagram.com/vcsplvd?igsh=MW00NW1xdWtoY2Q1Mw==" external><span data-testid="link-instagram-footer">Instagram</span></FooterContact>
+          <div className="mx-auto mt-1 grid w-full gap-x-8 gap-y-1 text-left sm:mt-3 sm:w-auto sm:max-w-[540px] sm:grid-cols-2 sm:gap-x-10 sm:gap-y-3 md:mx-0">
+            <FooterContact icon={<Phone size={11} />} href="tel:+918500045678"><span data-testid="link-phone-footer">+91 85000 45678 / 85004 95678</span></FooterContact>
+            <FooterContact icon={<MapPin size={11} />} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`} external><span data-testid="link-address-footer">{address}</span></FooterContact>
+            <FooterContact icon={<Mail size={11} />} href="mailto:hello@vivekanandaconcept.school"><span data-testid="link-email-footer">hello@vivekanandaconcept.school</span></FooterContact>
+            <FooterContact icon={<Instagram size={11} />} href="https://www.instagram.com/vcsplvd?igsh=MW00NW1xdWtoY2Q1Mw==" external><span data-testid="link-instagram-footer">Instagram</span></FooterContact>
           </div>
-          <button onClick={onEnquire} className="mt-2.5 rounded-full border-2 border-[#0F4C5C] px-3 py-1 text-[10px] font-bold tracking-[.06em] text-[#0F4C5C] transition hover:bg-[#0F4C5C] hover:text-white sm:mt-4 sm:px-4 sm:py-1.5 sm:text-[12px] sm:tracking-[.08em]" data-testid="button-footer-enquiry">ADMISSION ENQUIRY</button>
+          <button onClick={onEnquire} className="mt-1.5 rounded-full border-2 border-[#0F4C5C] px-2.5 py-0.5 text-[9px] font-bold tracking-[.04em] text-[#0F4C5C] transition hover:bg-[#0F4C5C] hover:text-white sm:mt-4 sm:px-4 sm:py-1.5 sm:text-[12px] sm:tracking-[.08em]" data-testid="button-footer-enquiry">ADMISSION ENQUIRY</button>
         </div>
       </div>
 
-      <div className="mt-3 flex items-center gap-4 sm:mt-5">
+      <div className="mt-2 flex items-center gap-3 sm:mt-5 sm:gap-4">
         <span className="h-px flex-1 bg-[#123A5E]/15" aria-hidden="true" />
-        <p className="text-center text-[10px] text-[#3F5771] sm:text-[13px]">© 2026 Sree Vivekananda Educational Society · Mandatory Disclosure</p>
+        <p className="text-center text-[8.5px] text-[#3F5771] sm:text-[13px]">© 2026 Sree Vivekananda Educational Society · Mandatory Disclosure</p>
         <span className="h-px flex-1 bg-[#123A5E]/15" aria-hidden="true" />
       </div>
     </div>
