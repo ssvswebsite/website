@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ArrowRight, Award, Baby, BarChart3, BookOpen, Building2, Bus, Calendar, Check, ChevronDown, ChevronRight, ClipboardCheck, Clock, Droplets, Eye, FileText, FlaskConical, Globe2, GraduationCap, Handshake, Heart, Instagram, Languages, Lightbulb, Mail, MapPin, Menu, MessageCircle, MessageSquare, Music, Palette, Phone, Presentation, Quote, Search, Send, Smile, Sprout, Stethoscope, Tent, TrendingUp, Trophy, User, UserRound, Users, Volume2, VolumeX, X } from 'lucide-react';
+import { ArrowRight, Award, Baby, BarChart3, BookOpen, Building2, Bus, Calendar, Check, ChevronDown, ChevronRight, ClipboardCheck, Clock, Droplets, Eye, FileText, FlaskConical, Globe2, GraduationCap, Handshake, Heart, Instagram, Languages, Lightbulb, Mail, MapPin, Menu, MessageCircle, MessageSquare, Music, Palette, Phone, Presentation, Quote, Search, Send, Smile, Sprout, Stethoscope, Tent, TrendingUp, Trophy, User, UserRound, Volume2, VolumeX, X } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -550,11 +550,22 @@ const BRANCH_CARDS = [
 ] as const;
 
 function Intro() {
-  return <section id="about" className="relative overflow-hidden py-5 md:py-7"><div className="absolute left-0 top-0 h-16 w-16 border-l-[3px] border-t-[3px] border-[#0F4C5C] opacity-70" />
+  return <section id="about" className="relative overflow-hidden py-5 md:py-7">
     <SectionIcons pins={PINNED_ICONS.about} />
     <div className="container-wide grid gap-7 md:grid-cols-[1fr_1fr] md:items-center">
-    <div className="reveal"><p className="max-w-[470px] text-[12px] leading-[1.45] text-black sm:text-[17px] sm:leading-6"><span className="font-extrabold uppercase">I</span>gniting minds, shaping futures. Join us for academic excellence, character building, and holistic development. Our classrooms blend structured, CBSE-aligned learning with hands-on activities that turn curiosity into confidence, while dedicated teachers mentor every child from their very first day through each milestone that follows. From Pre-School through High-School, we build a foundation of strong values, critical thinking and real-world skills so every student leaves prepared to lead — in the classroom and far beyond it.</p></div>
-    <div className="reveal relative mx-auto aspect-[1254/1030] w-full max-w-[460px] overflow-hidden rounded-3xl border-[6px] border-white bg-white shadow-[0_10px_26px_rgba(31,40,56,.18)] ring-1 ring-[#1C2A37]/25"><img src="/vivekananda.png" alt="Educate and raise the masses, and thus alone a nation is possible — Swami Vivekananda" className="h-full w-full rounded-2xl object-cover" data-testid="img-about" /></div>
+    <div className="reveal">
+      <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em] text-[#1B7A3E] sm:text-[12px]">
+        <Sprout size={16} aria-hidden="true" />Learn. Grow. Lead.
+      </p>
+      <h2 className="display-serif mt-4 text-[clamp(1.9rem,3.6vw,3rem)] font-bold leading-[1.12] text-[#153B5B]">Nurturing Minds.<br />Building Futures.</h2>
+      <p className="mt-5 max-w-[480px] text-[13px] leading-[1.65] text-[#3F5771] sm:text-[15.5px]">Where every child is inspired to learn, encouraged to dream, and prepared to lead with values and confidence.</p>
+      <a href="#school-life" className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#153B5B] px-6 py-3 text-[14px] font-semibold text-white shadow-md transition hover:bg-[#1B4E76] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B7A3E]" data-testid="link-about-learn-more">Learn More <ArrowRight size={16} aria-hidden="true" /></a>
+    </div>
+    <div className="reveal relative mx-auto w-full max-w-[560px]">
+      <div className="overflow-hidden rounded-3xl border-[6px] border-white bg-white shadow-[0_10px_26px_rgba(31,40,56,.18)] ring-1 ring-[#1C2A37]/25">
+        <img src="/smartclass.jpeg" alt="Students at work in a smart classroom at Sree Swamy Vivekananda School" className="aspect-[16/9] w-full rounded-2xl object-cover" data-testid="img-about" />
+      </div>
+    </div>
   </div>
   <div className="container-wide mt-10 md:mt-14">
     <div className="reveal text-center mb-2">
@@ -1042,19 +1053,18 @@ function EnquiryModal({ onClose }: { onClose: () => void }) {
   </div>;
 }
 
-/* The poster artwork draws its own close cross, its own CTA button and its
-   own "Call us" panel, so this renders the image alone — no white mount, no
-   cross of ours over the top of the drawn one, no second button underneath —
-   and lays invisible hit targets over the three drawn controls instead. The
-   percentages are measured off the artwork itself (766×677): the cross sits
-   at 97.9%/2.5%, the CTA runs x 46→97% / y 87→99%, and the phone panel is
-   the bottom-left corner. Being percentages they track the image at any
-   width. Backdrop-click and Escape both close as well, so a mis-tap on the
-   cross can never trap anyone in here. */
+/* The poster artwork draws its own CTA button and its own "Call us" panel, so
+   this renders the image alone — no white mount, no second button underneath —
+   and lays invisible hit targets over the two drawn controls instead. The
+   percentages are measured off the artwork itself (1342×1172): the CTA runs
+   x 47.8→97.5% / y 91.2→100%, and the phone panel is the bottom-left corner.
+   Being percentages they track the image at any width.
+   Unlike the previous artwork this one draws no close cross of its own, so the
+   cross below is a real, visible control rather than an invisible hit target
+   over a drawn one. Backdrop-click and Escape both close as well. */
 const POPUP_HOTSPOTS = {
-  close: { left: '97.9%', top: '2.5%' },
-  enquiry: { left: '46%', top: '87%', width: '51%', height: '12%' },
-  phone: { left: '2%', top: '84%', width: '36%', height: '15%' },
+  enquiry: { left: '47.8%', top: '91.2%', width: '49.7%', height: '8.8%' },
+  phone: { left: '0%', top: '85.5%', width: '40.3%', height: '14.5%' },
 } as const;
 
 function AdmissionsPopup({ onClose, onEnquire }: { onClose: () => void; onEnquire: () => void }) {
@@ -1066,11 +1076,15 @@ function AdmissionsPopup({ onClose, onEnquire }: { onClose: () => void; onEnquir
   return <div className="fixed inset-0 z-[60] grid place-items-center bg-[#1F2838]/70 p-4" role="dialog" aria-modal="true" aria-label="Admissions open" onClick={onClose}>
     <div className="relative w-full max-w-[620px]" onClick={(event) => event.stopPropagation()}>
       <img src="/admissions-popup.jpeg" alt="Admissions open at Sree Swamy Vivekananda English Medium School, Pulivendula. Now offering bus services for nearby villages." className="block w-full rounded-xl shadow-2xl" data-testid="img-admissions-popup" />
-      {/* Centred on the drawn cross rather than corner-anchored, and a fixed
-          40px square so it stays a real tap target even when the poster is
-          scaled down to a phone's width. */}
-      <button onClick={onClose} style={{ ...POPUP_HOTSPOTS.close, transform: 'translate(-50%, -50%)' }} className="absolute h-10 w-10 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white" aria-label="Close admissions popup" data-testid="button-close-admissions-popup" />
-      <button onClick={() => { onClose(); onEnquire(); }} style={POPUP_HOTSPOTS.enquiry} className="absolute rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white" data-testid="button-admissions-popup-enquiry">
+      {/* Kept inside the poster's own corner rather than straddling it, so the
+          backdrop's 16px padding can never clip it on a narrow phone. A fixed
+          40px square stays a real tap target at any width. Solid navy with a
+          white ring because the corner it lands on is half pale background and
+          half the blue "Enroll Now" bubble — a translucent disc read as neither. */}
+      <button onClick={onClose} className="absolute right-2 top-2 grid h-10 w-10 cursor-pointer place-items-center rounded-full bg-[#153B5B] text-white shadow-lg ring-2 ring-white transition hover:bg-[#1B4E76] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B7A3E]" aria-label="Close admissions popup" data-testid="button-close-admissions-popup">
+        <X size={20} aria-hidden="true" />
+      </button>
+      <button onClick={() => { onClose(); onEnquire(); }} style={POPUP_HOTSPOTS.enquiry} className="absolute cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white" data-testid="button-admissions-popup-enquiry">
         <span className="sr-only">Start your admission enquiry</span>
       </button>
       {/* The school's main line, as in the footer and header — not the
