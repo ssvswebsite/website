@@ -1245,7 +1245,7 @@ function PageHeading({ title, accent, blurb }: { title?: string; accent?: string
 function BusRoutesPage() {
   return <PageShell title="Bus Routes & Area Search | Vivekananda Concept School" description="Search your village to see whether a Sree Swamy Vivekananda School bus reaches you — the full stop list for the Sivalayam Street, Brahmanapalle Road and Nagarigutta routes.">
     {(onEnquire) => <>
-      <PageHeading title="Bus" accent="Routes" blurb="Three routes reach across Pulivendla and the villages around it. Type your village or area below to see whether a stop is already near you — and if it is not, tell us, because routes are reviewed as the town grows." />
+      <PageHeading title="Bus" accent="Routes" />
       <section className="py-7 md:py-9"><div className="container-wide"><BusRoutes /></div></section>
       <Admissions onEnquire={onEnquire} />
     </>}
@@ -1316,30 +1316,6 @@ const BLOG_POSTS = [
       'Class teachers are deliberately kept with the same group year on year, which means that even in the first week, there is one adult who is building a real picture of your child — who needs drawing out, who needs a quieter corner, who has already made a friend and who is still finding their feet. That teacher is your first call for anything day-to-day, and is easier to reach directly than most parents expect.',
       'Assessment does not wait for a term-end report. Progress is tracked continuously through the year, so if something needs attention — academic or otherwise — it tends to surface, and get raised with you, well before it would show up on a formal report card. If a first month has gone quietly, that quiet is itself informative.',
       'The honest answer to "how will I know how it’s going" is: you will hear from us before you have to ask. But asking early is always welcome — a two-minute question in week two is easier for everyone than the same question, grown larger, in week twelve.',
-    ],
-  },
-  {
-    slug: 'choosing-between-three-campuses',
-    image: '/campus-courtyard.jpg', date: 'April 24, 2026', category: 'Admissions',
-    title: 'Three Campuses, One School: How to Choose Between Them',
-    excerpt: 'Parents ask which of our campuses is the better one. The honest answer is that the question is the wrong way round — here is what actually differs, and what deliberately does not.',
-    body: [
-      'The question we are asked more than any other during admissions is which of the three campuses is the better one. The honest answer is that it is the wrong question, and we would rather say so than let a family travel half an hour further than they need to on the strength of a rumour.',
-      'What is identical across Shivalayam Street, Brahmanapalli Road and Parnapalli Road is nearly everything that decides how a child does: the CBSE-aligned LEAD curriculum, the assessment pattern through the year, the smart classrooms, the IIT-JEE and NEET foundation work from the middle years, and the expectation that a class teacher stays with the same group year on year. A family moving between our campuses finds their child picking up exactly where they left off, because there is nothing new to pick up.',
-      'What differs is geography and the feel that comes with it. Shivalayam Street is where the school began and sits in the middle of town. Brahmanapalli Road opened to serve that side of Pulivendla and has kept the unhurried quality of a school where everyone knows everyone. Parnapalli Road was laid out later, with room to move between activities built into the plan rather than retrofitted.',
-      'So the sensible way to choose is the dull one: pick the shorter journey, or the campus the bus already reaches. A child who spends forty fewer minutes a day travelling has forty more minutes for everything else, and no difference between our campuses is worth trading that for.',
-    ],
-  },
-  {
-    slug: 'why-we-teach-values-deliberately',
-    image: '/why-values.jpg', date: 'April 2, 2026', category: 'Community',
-    title: 'Why We Teach Punctuality and Honesty as Deliberately as Maths',
-    excerpt: 'Character is usually left to happen by itself, on the theory that good children turn out well. We put it on the timetable instead — and expect it daily rather than mentioning it annually.',
-    body: [
-      'Most schools will tell you they teach values. Rather fewer can tell you when. Character is usually left to happen by itself, on the quiet theory that good children turn out well and the rest is not the school’s business.',
-      'We take the opposite view, for a practical reason rather than a lofty one: the habits that decide how a student handles Class X are built years earlier and are entirely learnable. Turning up on time, owning up when the homework was not done, looking after a younger child in the corridor, finishing a thing you started even after it stopped being interesting — none of these arrive by themselves, and all of them can be taught.',
-      'So they are expected here every day rather than mentioned once a year at assembly. A student who says they did not do the work gets a straighter response than one who invents a reason, and the difference is deliberate and consistent. The older children are given real responsibility for the younger ones, which is the fastest way we know to teach someone that they are already the sort of person others depend on.',
-      'The reason this belongs on a page about academics at all is that the two are not separable. The child who finishes what they start is the same child who works through a difficult chapter instead of quietly deciding they are bad at the subject. Values are not a softer alternative to results — over a long enough run, they are most of what produces them.',
     ],
   },
   {
@@ -1448,211 +1424,11 @@ function BlogPostPage({ params }: { params: { slug: string } }) {
 function GalleryPage() {
   return <PageShell title="Photo Gallery | Sree Vivekananda Educational Society" description="Photographs from Sree Vivekananda Educational Society, Pulivendla — the campus, the classrooms, the playing fields and the school buses.">
     {(onEnquire) => <>
-      <PageHeading title="Photo" accent="Gallery" blurb="We are replacing the pictures here with photographs taken on our own campuses — the classrooms, the grounds, the making lab and the buses. They will go up as they are shot." />
+      <PageHeading title="Photo" accent="Gallery" />
       <section className="py-5 md:py-7"><div className="container-wide"><GallerySquares /></div></section>
       <Admissions onEnquire={onEnquire} />
     </>}
   </PageShell>;
-}
-
-/* ══════════════════════════ PAGE CONTENT BLOCKS ══════════════════════════
-   Sections written for the standalone nav pages, which opened as little more
-   than a heading over one reused home-page section. Everything here is drawn
-   from what the site already says about itself — the curriculum, the three
-   campuses, the transport, the assessment pattern — so nothing claims more
-   than the rest of the page does. Where a real school detail is needed and
-   was not available, it is flagged rather than invented.                  */
-
-/* ── About: how the society got to three campuses. */
-const OUR_STORY = [
-  'Sree Vivekananda Educational Society began with one campus on Shivalayam Street, in the middle of Pulivendla. It is still the campus that sets the pace for the two that followed, and it still teaches the whole way from Pre-School to High-School — so a child who joins at three can sit their board exams without ever changing schools.',
-  'Brahmanapalli Road came next, then Parnapalli Road, both opened for the same plain reason: a good school ought to be a short journey for a family rather than a long one. Between them the three campuses reach most of Pulivendla and the villages around it, and the bus routes were built to close whatever distance is left.',
-  'What holds them together is that they are not three schools sharing a name. The curriculum is the same, the assessment rhythm is the same, and the expectations of a child are the same at each — which is why a family moving between our campuses finds their child picking up exactly where they left off, rather than starting again.',
-];
-
-function OurStory() {
-  return <section className="relative py-6 md:py-9"><div className="container-wide">
-    <Heading title="Our" accent="Story" />
-    <div className="mx-auto mt-7 grid max-w-[1060px] gap-8 md:grid-cols-[1.25fr_1fr] md:items-center">
-      <div className="reveal">
-        {OUR_STORY.map((paragraph, index) => <p key={paragraph.slice(0, 40)} className={`text-[15px] leading-[1.75] text-black/75 ${index > 0 ? 'mt-4' : ''}`}>{paragraph}</p>)}
-      </div>
-      {/* The quote orb the branch pages carry, so About Us reads the same
-          whether you reach it from the group site or from a campus. */}
-      <figure className="reveal relative mx-auto aspect-square w-full max-w-[360px]">
-        <span className="absolute inset-[6%] rounded-full bg-white shadow-[0_10px_30px_rgba(31,40,56,.16)]" />
-        <OrbRing colour="#C2591B" spin={1} />
-        <div className="absolute inset-[15%] flex flex-col items-center justify-center gap-3 text-center">
-          <Quote className="h-6 w-6 shrink-0 text-[#C2591B]" fill="currentColor" aria-hidden="true" />
-          <blockquote className="font-display text-[clamp(.85rem,1.3vw,1.05rem)] italic leading-7 text-[#123A5E]">Education is the manifestation of the perfection already in man.</blockquote>
-          <figcaption className="text-[13px] font-semibold text-[#C2591B]">— Swami Vivekananda</figcaption>
-        </div>
-      </figure>
-    </div>
-  </div></section>;
-}
-
-/* ── About: what the school is for, in two cards. */
-const VISION_MISSION = [
-  { Icon: Eye, title: 'Our Vision', copy: 'That every child who passes through our gates leaves able to think for themselves, work alongside others, and carry themselves with the confidence that comes from having been genuinely known by the adults who taught them.' },
-  { Icon: Sprout, title: 'Our Mission', copy: 'To run a school in Pulivendla where activity-first teaching, teachers who stay with a class, and honest reporting to parents add up to an education a family can rely on from Pre-School through to Class X — and to keep it within reach of the families around us.' },
-];
-
-function VisionMission() {
-  return <section className="relative py-6 md:py-9"><div className="container-wide">
-    <div className="mx-auto grid max-w-[1000px] gap-6 sm:grid-cols-2">
-      {VISION_MISSION.map(({ Icon, title, copy }) => <div key={title} className="reveal rounded-2xl border-[5px] border-white bg-white p-6 shadow-[0_10px_26px_rgba(31,40,56,.14)] ring-1 ring-[#1C2A37]/10" data-testid={`card-${title.toLowerCase().replace(' ', '-')}`}>
-        <span className="grid h-12 w-12 place-items-center rounded-full bg-[#0F4C5C]/10 text-[#0F4C5C]" aria-hidden="true"><Icon size={22} /></span>
-        <h3 className="display-serif mt-4 text-[21px] font-medium italic text-[#123A5E]">{title}</h3>
-        <p className="mt-2.5 text-[14.5px] leading-[1.65] text-black/75">{copy}</p>
-      </div>)}
-    </div>
-  </div></section>;
-}
-
-/* ── About + Home: the six reasons, each with one of the `why-*` photographs. */
-const WHY_US = [
-  { image: '/why-academic-strength.jpg', Icon: GraduationCap, title: 'Academic Strength', copy: 'A CBSE-aligned LEAD curriculum running unbroken from Pre-School to Class X, with IIT-JEE and NEET foundation work alongside board preparation from the middle years.' },
-  { image: '/why-beyond-classroom.jpg', Icon: Lightbulb, title: 'Beyond the Classroom', copy: 'Sport on our own grounds, a making lab open past the last period, and clubs for robotics, craft, music and elocution — the parts of school students remember longest.' },
-  { image: '/why-care.jpg', Icon: Heart, title: 'Teachers Who Know Your Child', copy: 'Class teachers stay with the same group year on year, so within a fortnight there is an adult here who knows who needs drawing out and who has quietly stopped following.' },
-  { image: '/why-safe-campus.jpg', Icon: Eye, title: 'A Campus That Feels Safe', copy: 'Trained staff on every bus, a real attendance check at each stop rather than a headcount from memory, and a campus laid out so no child is far from an adult who knows them.' },
-  { image: '/why-progress.jpg', Icon: TrendingUp, title: 'Progress You Can See', copy: 'Continuous assessment through the year instead of one high-stakes exam, with what we find shared as we find it — including the parts that are harder to hear.' },
-  { image: '/why-values.jpg', Icon: Handshake, title: 'Values That Outlast School', copy: 'Punctuality, honesty, looking after the younger children and finishing what you start are expected here every day, and taught as deliberately as any subject on the timetable.' },
-];
-
-function WhyUs() {
-  return <section id="why-us" className="relative py-6 md:py-9"><div className="container-wide">
-    <Heading title="Why" accent="Vivekananda" />
-    <p className="reveal mx-auto mt-4 max-w-[620px] text-center text-[15px] leading-[1.6] text-black/75">Six things a parent asked us about most, answered as plainly as we can put them.</p>
-    <div className="mx-auto mt-8 grid max-w-[1150px] gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {WHY_US.map(({ image, Icon, title, copy }, index) => <article key={title} className="reveal flex flex-col overflow-hidden rounded-2xl border-[5px] border-white bg-white shadow-[0_10px_26px_rgba(31,40,56,.14)] ring-1 ring-[#1C2A37]/10" data-testid={`card-why-us-${index + 1}`}>
-        <div className="relative aspect-[16/9] w-full overflow-hidden">
-          <img src={image} alt={title} className="h-full w-full object-cover" loading="lazy" />
-          <span className="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-white/95 text-[#0F4C5C] shadow-[0_4px_12px_rgba(31,40,56,.22)]" aria-hidden="true"><Icon size={17} /></span>
-        </div>
-        <div className="flex flex-1 flex-col px-5 pb-5 pt-4">
-          <h3 className="font-sans text-[16px] font-semibold leading-snug text-[#123A5E]">{title}</h3>
-          <p className="mt-2 text-[13.5px] leading-[1.6] text-black/70">{copy}</p>
-        </div>
-      </article>)}
-    </div>
-  </div></section>;
-}
-
-/* ── Results: what sits behind the posters. */
-const RESULT_METHOD = [
-  { Icon: ClipboardCheck, title: 'Caught early, not at the end', copy: 'A gap found in week three is a five-minute conversation and a different homework set. The same gap found in week thirty is a crisis. Assessment runs all year for exactly that reason.' },
-  { Icon: Award, title: 'Boards and entrances together', copy: 'From the middle years, IIT-JEE and NEET foundation work runs in parallel with board coursework, so no student has to choose between doing well in Class X and being ready for what follows it.' },
-  { Icon: UserRound, title: 'Teachers who stay with a class', copy: 'Keeping a class teacher with the same group year on year means nobody has to rebuild a picture of a child each June — the teacher already knows where the ground is soft.' },
-  { Icon: MessageSquare, title: 'Told to you as we find it', copy: 'Assessment that stays inside the school defeats its own purpose. What we find goes to parents while there is still a term left to act on it, not as one number in June.' },
-];
-
-function ResultMethod() {
-  return <section className="relative py-6 md:py-9"><div className="container-wide">
-    <Heading title="How a Result" accent="Is Built" />
-    <p className="reveal mx-auto mt-4 max-w-[640px] text-center text-[15px] leading-[1.6] text-black/75">A board result is the last week of a long process. Most of what decides it happens in the two years before anyone opens an exam paper.</p>
-    <div className="mx-auto mt-8 grid max-w-[1060px] gap-6 sm:grid-cols-2">
-      {RESULT_METHOD.map(({ Icon, title, copy }, index) => <div key={title} className="reveal flex gap-4 rounded-2xl border-[5px] border-white bg-white p-5 shadow-[0_8px_22px_rgba(31,40,56,.12)] ring-1 ring-[#1C2A37]/10" data-testid={`card-result-method-${index + 1}`}>
-        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#0F4C5C]/10 text-[#0F4C5C]" aria-hidden="true"><Icon size={19} /></span>
-        <div>
-          <h3 className="font-sans text-[15.5px] font-semibold leading-snug text-[#123A5E]">{title}</h3>
-          <p className="mt-1.5 text-[13.5px] leading-[1.6] text-black/70">{copy}</p>
-        </div>
-      </div>)}
-    </div>
-  </div></section>;
-}
-
-/* ── Facilities: what the four circles above it do not cover.
-   NOTE: every entry here restates something the site already claims. A
-   library, science labs and a health room would belong in this list too —
-   they are left out until someone confirms what each campus actually has. */
-const CAMPUS_FACILITIES = [
-  { Icon: FlaskConical, title: 'The Making Lab', copy: 'Robotics kits, craft materials and simple tools, open past the last period so a half-finished idea does not have to wait a week for the next scheduled slot.' },
-  { Icon: Trophy, title: 'Our Own Grounds', copy: 'Athletics and cricket played on the school’s own fields, coached rather than merely supervised, with inter-house meets spread through the year.' },
-  { Icon: Presentation, title: 'Digital Classrooms', copy: 'Interactive boards and audio-visual tools in every room — used to show a concept three different ways for the child who needed more than one.' },
-  { Icon: Music, title: 'Arts, Music and Stage', copy: 'Music, dance, drawing and elocution rehearsed properly and performed to a real audience at the annual day and our cultural evenings.' },
-  { Icon: Bus, title: 'School Transport', copy: 'Buses on three routes across Pulivendla and the villages around it, with trained staff and an attendance check taken at every single stop.' },
-  { Icon: Eye, title: 'A Supervised Campus', copy: 'Movement between activities is watched by staff who know the children by name, and a child who does not board a bus is flagged that morning, not that evening.' },
-];
-
-function CampusFacilities() {
-  return <section className="relative py-6 md:py-9"><div className="container-wide">
-    <Heading title="On" accent="Campus" />
-    <div className="mx-auto mt-8 grid max-w-[1100px] gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {CAMPUS_FACILITIES.map(({ Icon, title, copy }, index) => <div key={title} className="reveal rounded-2xl border-[5px] border-white bg-white p-5 shadow-[0_8px_22px_rgba(31,40,56,.12)] ring-1 ring-[#1C2A37]/10" data-testid={`card-campus-facility-${index + 1}`}>
-        <span className="grid h-11 w-11 place-items-center rounded-full bg-[#0F4C5C]/10 text-[#0F4C5C]" aria-hidden="true"><Icon size={19} /></span>
-        <h3 className="mt-3.5 font-sans text-[15.5px] font-semibold leading-snug text-[#123A5E]">{title}</h3>
-        <p className="mt-1.5 text-[13.5px] leading-[1.6] text-black/70">{copy}</p>
-      </div>)}
-    </div>
-    <div className="reveal mt-8 flex justify-center">
-      <Link href="/bus-routes" className="inline-flex items-center gap-2 rounded-full border-2 border-[#0F4C5C] px-6 py-3 text-[13px] font-bold tracking-[.06em] text-[#0F4C5C] transition hover:bg-[#0F4C5C] hover:text-white" data-testid="link-facilities-bus-routes">
-        CHECK IF A BUS REACHES YOUR AREA <ArrowRight size={15} aria-hidden="true" />
-      </Link>
-    </div>
-  </div></section>;
-}
-
-/* ── School Life: the three strands the four circles above only introduce. */
-const SCHOOL_LIFE_DETAIL = [
-  { Icon: Trophy, title: 'Inter-house sport, all year', copy: 'Houses compete through the year across a wide enough spread of events — relays, throws, team games, activities that reward coordination over raw speed — that a child who will never win the hundred metres still has something on the calendar that is genuinely theirs. A child who competes and loses gracefully, or who finds the one event they are unexpectedly good at, carries that into how they handle a hard exam the same term.' },
-  { Icon: FlaskConical, title: 'Clubs, and the making lab', copy: 'Science, robotics and craft clubs run alongside the timetable, so a standing interest is not limited to whatever the syllabus happens to need that term. The making lab stays open beyond lesson time, and the real measure of whether it works is how often the same small group turns up after their last period to finish something nobody assigned them.' },
-  { Icon: Calendar, title: 'The year, as it is actually lived', copy: 'Festivals, national days, science fairs, field trips, the annual day and cultural evenings — the occasions that turn a set of classmates into a year group who still remember each other. Music, dance, drawing and elocution are rehearsed properly for these rather than thrown together in the last week.' },
-];
-
-function SchoolLifeDetail() {
-  return <section className="relative py-6 md:py-9"><div className="container-wide">
-    <Heading title="How the Year" accent="Runs" />
-    <div className="mx-auto mt-8 grid max-w-[1100px] gap-6 lg:grid-cols-3">
-      {SCHOOL_LIFE_DETAIL.map(({ Icon, title, copy }, index) => <div key={title} className="reveal rounded-2xl border-[5px] border-white bg-white p-6 shadow-[0_8px_22px_rgba(31,40,56,.12)] ring-1 ring-[#1C2A37]/10" data-testid={`card-school-life-detail-${index + 1}`}>
-        <span className="grid h-11 w-11 place-items-center rounded-full bg-[#0F4C5C]/10 text-[#0F4C5C]" aria-hidden="true"><Icon size={19} /></span>
-        <h3 className="display-serif mt-4 text-[18px] font-medium italic text-[#123A5E]">{title}</h3>
-        <p className="mt-2.5 text-[13.5px] leading-[1.65] text-black/70">{copy}</p>
-      </div>)}
-    </div>
-  </div></section>;
-}
-
-/* ── Contact: the three campuses, addressed, and the questions we are asked
-   most. Addresses come straight from `BRANCHES`, so they cannot drift out of
-   step with the campus pages. */
-function CampusAddresses() {
-  return <section className="relative py-6 md:py-9"><div className="container-wide">
-    <Heading title="Our Three" accent="Campuses" />
-    <div className="mx-auto mt-8 grid max-w-[1100px] gap-6 lg:grid-cols-3">
-      {Object.entries(BRANCHES).map(([slug, branch]) => <div key={slug} className="reveal flex flex-col rounded-2xl border-[5px] border-white bg-white p-5 shadow-[0_8px_22px_rgba(31,40,56,.12)] ring-1 ring-[#1C2A37]/10" data-testid={`card-campus-address-${slug}`}>
-        <h3 className="font-sans text-[16px] font-semibold text-[#123A5E]">{branch.streetName}</h3>
-        <p className="mt-2 flex-1 text-[13.5px] leading-[1.6] text-black/70">{branch.fullAddress}</p>
-        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
-          <Link href={`/branch/${slug}`} className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#0F4C5C] hover:underline" data-testid={`link-campus-page-${slug}`}>View campus <ArrowRight size={13} aria-hidden="true" /></Link>
-          <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(branch.fullAddress)}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#0F4C5C] hover:underline" data-testid={`link-campus-map-${slug}`}>Open in Maps <MapPin size={13} aria-hidden="true" /></a>
-        </div>
-      </div>)}
-    </div>
-  </div></section>;
-}
-
-const CONTACT_FAQ = [
-  { q: 'Which classes do you admit into?', a: 'Pre-School through to Class X, on the CBSE-aligned LEAD curriculum. The same curriculum runs at all three campuses, so a child never has to relearn a syllabus when moving between them.' },
-  { q: 'Is there a school bus to our village?', a: 'Our three routes cover most of Pulivendla and the villages around it. Rather than reading a long list, type your area into the bus route search and it will tell you whether a stop is near you.' },
-  { q: 'Which campus should we visit?', a: 'Whichever is the shorter journey — the teaching, assessment and expectations are the same at each. Shivalayam Street is the original campus; Brahmanapalli Road and Parnapalli Road serve those sides of town.' },
-  { q: 'How do we start an admission?', a: 'Send an admission enquiry using the button above, or call the number on this page. We will arrange a time for you to see the campus and talk through where your child is at.' },
-];
-
-function ContactFaq() {
-  return <section className="relative py-6 md:py-9"><div className="container-wide">
-    <Heading title="Questions We" accent="Are Asked Most" />
-    <div className="mx-auto mt-8 grid max-w-[1000px] gap-5 sm:grid-cols-2">
-      {CONTACT_FAQ.map(({ q, a }, index) => <div key={q} className="reveal rounded-2xl border-[5px] border-white bg-white p-5 shadow-[0_8px_22px_rgba(31,40,56,.12)] ring-1 ring-[#1C2A37]/10" data-testid={`card-contact-faq-${index + 1}`}>
-        <h3 className="font-sans text-[15px] font-semibold leading-snug text-[#123A5E]">{q}</h3>
-        <p className="mt-2 text-[13.5px] leading-[1.6] text-black/70">{a}</p>
-      </div>)}
-    </div>
-    <div className="reveal mt-7 flex justify-center">
-      <Link href="/bus-routes" className="inline-flex items-center gap-2 text-[13px] font-semibold text-[#0F4C5C] hover:underline" data-testid="link-contact-bus-routes">Search the bus routes by area <ArrowRight size={14} aria-hidden="true" /></Link>
-    </div>
-  </div></section>;
 }
 
 /* ─────────────────────────── HEADER NAV PAGES ─────────────────────────── */
@@ -1665,10 +1441,7 @@ function AboutPage() {
   return <PageShell title="About Us | Sree Vivekananda Educational Society" description="Sree Vivekananda Educational Society, Pulivendla — three campuses running one CBSE-aligned curriculum from Pre-School through Class X.">
     {(onEnquire) => <>
       <PageHeading title="About" accent="Us" blurb="Three campuses in Pulivendla, one curriculum, and a school day built around understanding a concept rather than repeating it." />
-      <OurStory />
-      <VisionMission />
       <Intro />
-      <WhyUs />
       <Admissions onEnquire={onEnquire} />
     </>}
   </PageShell>;
@@ -1679,7 +1452,6 @@ function ResultsPage() {
     {(onEnquire) => <>
       <PageHeading title="SSC" accent="Results 2026" />
       <Results heading={false} />
-      <ResultMethod />
       <Admissions onEnquire={onEnquire} />
     </>}
   </PageShell>;
@@ -1690,7 +1462,6 @@ function FacilitiesPage() {
     {(onEnquire) => <>
       <PageHeading accent="Facilities" blurb="What the school day is built on — how children get here, what a classroom carries, and what is taught in it." />
       <Facilities heading={false} />
-      <CampusFacilities />
       <Admissions onEnquire={onEnquire} />
     </>}
   </PageShell>;
@@ -1701,7 +1472,6 @@ function SchoolLifePage() {
     {(onEnquire) => <>
       <PageHeading title="School" accent="Life" blurb="The four sides of the day that sit outside the timetable — and that most children remember longest." />
       <SchoolLife heading={false} />
-      <SchoolLifeDetail />
       <Admissions onEnquire={onEnquire} />
     </>}
   </PageShell>;
@@ -1744,8 +1514,6 @@ function ContactPage() {
           <button onClick={onEnquire} className="rounded-full border-2 border-[#0F4C5C] px-7 py-3 text-[13px] font-bold tracking-[.08em] text-[#0F4C5C] transition hover:bg-[#0F4C5C] hover:text-white" data-testid="button-contact-enquiry">ADMISSION ENQUIRY</button>
         </div>
       </div></section>
-      <CampusAddresses />
-      <ContactFaq />
       <Admissions onEnquire={onEnquire} />
     </>}
   </PageShell>;
@@ -1753,7 +1521,7 @@ function ContactPage() {
 
 function Home() {
   return <PageShell title="Vivekananda Concept School | Pulivendla" description="Vivekananda Concept School in Pulivendla offers thoughtful education from Pre-School through High-School." admissionsPopup>
-    {(onEnquire) => <><Hero /><Intro /><WhyUs /><Results /><Facilities /><SchoolLife /><Gallery /><Admissions onEnquire={onEnquire} /></>}
+    {(onEnquire) => <><Hero /><Intro /><Results /><Facilities /><SchoolLife /><Gallery /><Admissions onEnquire={onEnquire} /></>}
   </PageShell>;
 }
 
