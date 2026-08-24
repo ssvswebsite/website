@@ -636,10 +636,11 @@ const SCHOOL_LIFE = [
 ] as const;
 
 /* Two by two, each photograph in the site's gallery orb with its words
-   beside it rather than beneath. The orb is `GalleryOrb` itself, so these
-   click through to the lightbox and carry the same spinning ring as the
-   circles in Facilities and the Gallery; the fixed-width wrapper is what
-   holds it to a size that leaves room for the text alongside. */
+   beside it rather than beneath. The orb is `GalleryOrb` itself, carrying
+   the same spinning ring as the circles in Facilities and the Gallery, but
+   non-interactive like the Facilities ones — these illustrate their caption
+   and there is nothing worth opening full-size. The fixed-width wrapper is
+   what holds the orb to a size that leaves room for the text alongside. */
 function SchoolLife({ heading = true }: { heading?: boolean }) {
   return <section id="school-life" className="relative py-5 md:py-7">
     <SectionIcons pins={PINNED_ICONS.schoolLife} />
@@ -648,7 +649,7 @@ function SchoolLife({ heading = true }: { heading?: boolean }) {
     <div className="mx-auto mt-8 grid max-w-[1020px] gap-x-5 gap-y-11 sm:grid-cols-2">
       {SCHOOL_LIFE.map(({ image, title, copy }, index) => <div key={title} className="reveal flex flex-col items-center gap-4 text-center sm:flex-row sm:items-center sm:gap-4 sm:text-left" data-testid={`card-school-life-${index + 1}`}>
         <div className="w-[235px] shrink-0">
-          <GalleryOrb src={image} alt={title} colour={ORB_COLOURS[index % ORB_COLOURS.length]} spin={index * 47} />
+          <GalleryOrb src={image} alt={title} colour={ORB_COLOURS[index % ORB_COLOURS.length]} spin={index * 47} interactive={false} />
         </div>
         <div className="flex-1">
           <h3 className="font-sans text-[17px] font-semibold leading-snug text-[#123A5E]">{title}</h3>
@@ -699,11 +700,27 @@ function Results({ heading = true }: { heading?: boolean }) {
    so pictures and icons can share the row without breaking its rhythm.
    `contain` for the ones that are logos rather than photographs: filling a
    circle crops a logo's edges off, where a photograph only loses background. */
-const facilities: { icon?: typeof Bus; image?: string; contain?: boolean; title: string; copy: string }[] = [
-  { image: '/schoolbus.jpeg', title: 'Safe & Convenient Transport', copy: 'Buses covering all major routes, with trained staff ensuring safe pickup and drop every day. Parents can rely on consistent timing and real attendance checks at every stop.' },
-  { image: '/smartclass.jpeg', title: 'Smart Classrooms', copy: 'Interactive digital boards and audio-visual tools that make every lesson engaging and easy to grasp. Concepts come alive through visuals, simulations and collaborative activities.' },
-  { image: '/cbse.jpeg', contain: true, title: 'CBSE Based LEAD Curriculum', copy: 'A structured, activity-based curriculum aligned with CBSE standards for strong conceptual learning. Regular assessments track progress and close gaps early.' },
-  { image: '/iit.jpeg', contain: true, title: 'IIT-JEE and NEET Foundation', copy: 'Early foundation coaching that builds problem-solving skills for competitive exams from school itself. Experienced faculty blend board preparation with entrance-exam thinking.' },
+const facilities: { icon?: typeof Bus; image?: string; contain?: boolean; title: string; copy: string; detail: string }[] = [
+  {
+    image: '/schoolbus.jpeg', title: 'Safe & Convenient Transport',
+    copy: 'Buses covering all major routes, with trained staff ensuring safe pickup and drop every day. Parents can rely on consistent timing and real attendance checks at every stop.',
+    detail: 'Buses run three routes reaching across Pulivendla and the villages around it, each carrying trained staff alongside the driver. Attendance is taken properly at every stop rather than counted from memory, so a child who does not board is flagged that same morning instead of being missed in the afternoon. Routes are reviewed as the town grows and new residential areas open up, rather than left to run unchanged for years. For most families the measure of all this is simply that pickup and drop stop being something you think about.',
+  },
+  {
+    image: '/smartclass.jpeg', title: 'Smart Classrooms',
+    copy: 'Interactive digital boards and audio-visual tools that make every lesson engaging and easy to grasp. Concepts come alive through visuals, simulations and collaborative activities.',
+    detail: 'Every room carries an interactive digital board and audio-visual tools, used to show a concept three different ways for the child who needed more than one. Simulations, visuals and collaborative activities do the work a diagram on a blackboard cannot — a water cycle that actually moves, a circuit that lights up only once it is wired correctly. None of this replaces a good teacher; it gives one more to work with, in the hands of faculty who already know which child needs the idea approached from another angle and which one had it the first time.',
+  },
+  {
+    image: '/cbse.jpeg', contain: true, title: 'CBSE Based LEAD Curriculum',
+    copy: 'A structured, activity-based curriculum aligned with CBSE standards for strong conceptual learning. Regular assessments track progress and close gaps early.',
+    detail: 'A structured, activity-first curriculum aligned to CBSE standards, running unbroken from Pre-School through to Class X. Children build a concept with their own hands before they are handed the word for it, which is why it tends to stay put in a way a copied definition does not. Because the same curriculum, assessment rhythm and teaching approach carry through every stage, nothing has to be relearned at a transition — and a child who joins at three never has to change schools to sit their boards. Assessment runs continuously through the year, so a gap is closed in the week it appears rather than discovered the term after.',
+  },
+  {
+    image: '/iit.jpeg', contain: true, title: 'IIT-JEE and NEET Foundation',
+    copy: 'Early foundation coaching that builds problem-solving skills for competitive exams from school itself. Experienced faculty blend board preparation with entrance-exam thinking.',
+    detail: 'From the middle years, foundation coaching for IIT-JEE and NEET runs in parallel with regular board coursework rather than piled on top of it, so no student has to choose between doing well in Class X and being ready for what follows it. Experienced faculty blend board preparation with entrance-exam thinking — the same chapter approached twice, once for the exam that is coming and once for the one after that. Starting this early enough means the final two years are a continuation rather than a scramble.',
+  },
 ];
 const busRoutes = [
   { stop: 'Sivalayam Street', areas: ['Basireddy Palle', 'Boggudu Palle', 'Siddam Reddy Palle', 'Peddajuturu', 'Chinthalajuturu', 'Gollala Guduru', 'Pernapadu', 'Alavalapadu', 'Velamavari Palle', 'Besthavari Palle', 'Velpula', 'Vemula', 'Gondipalle', 'Kothapalle', 'V. Kothapalle', 'Tallapalle', 'Ganganapalle', 'Santha Kovvuru', 'Paluru', 'Agaduru', 'Inagaluru', 'Saidapuram', 'Krishnamgari Palle', 'R. Thummalapalle'] },
@@ -762,21 +779,21 @@ function BusRoutes() {
    pin hung off a card's edge would sit on top of its own circle. So the
    decorative icons hang off the section instead, two down each side, clear
    of the row entirely. */
-function Facilities({ heading = true }: { heading?: boolean }) {
+function Facilities({ heading = true, expanded = false }: { heading?: boolean; expanded?: boolean }) {
   return <section id="media" className="relative py-5 md:py-7">
     <SectionIcons pins={PINNED_ICONS.facilities} />
     <div className="container-wide">
     {heading && <Heading accent="Facilities" />}
-    <div className="relative mx-auto mt-8 grid max-w-[1000px] grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-4 sm:gap-x-6 sm:gap-y-12">
+    <div className={`relative mx-auto mt-8 grid ${expanded ? 'max-w-[1040px] grid-cols-1 gap-x-10 gap-y-12 sm:grid-cols-2 sm:gap-y-14' : 'max-w-[1000px] grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-4 sm:gap-x-6 sm:gap-y-12'}`}>
       {/* Not a flex wrapper: `GalleryOrb`'s own figure needs to be a normal
           block box so its `w-full` button resolves against the full column
           width — inside a flex parent with `items-center` it would shrink to
           content instead and the orb would render tiny. */}
-      {facilities.map(({ image, contain, title, copy }, index) => (
+      {facilities.map(({ image, contain, title, copy, detail }, index) => (
         <div key={title} className="reveal relative text-center" data-testid={`card-facility-${index + 1}`}>
           <GalleryOrb src={image!} alt={title} colour={ORB_COLOURS[index % ORB_COLOURS.length]} spin={index * 47} contain={contain} interactive={false} />
-          <h3 className="mt-4 font-sans text-[12px] font-medium leading-[1.2] text-black sm:text-[16px] sm:leading-snug">{title}</h3>
-          <p className="mt-1.5 mx-auto max-w-[280px] text-[10px] leading-[1.35] text-black/75 sm:text-[12.5px] sm:leading-[1.5]">{copy}</p>
+          <h3 className={expanded ? 'mt-5 font-sans text-[17px] font-semibold leading-snug text-[#123A5E] sm:text-[19px]' : 'mt-4 font-sans text-[12px] font-medium leading-[1.2] text-black sm:text-[16px] sm:leading-snug'}>{title}</h3>
+          <p className={expanded ? 'mx-auto mt-2.5 max-w-[430px] text-[13.5px] leading-[1.7] text-black/75 sm:text-[14.5px]' : 'mt-1.5 mx-auto max-w-[280px] text-[10px] leading-[1.35] text-black/75 sm:text-[12.5px] sm:leading-[1.5]'}>{expanded ? detail : copy}</p>
         </div>
       ))}
     </div>
@@ -1467,7 +1484,7 @@ function FacilitiesPage() {
   return <PageShell title="Facilities | Sree Vivekananda Educational Society" description="Transport, smart classrooms, the CBSE-based LEAD curriculum and IIT-JEE and NEET foundation coaching at Sree Swamy Vivekananda School, Pulivendla.">
     {(onEnquire) => <>
       <PageHeading accent="Facilities" blurb="What the school day is built on — how children get here, what a classroom carries, and what is taught in it." />
-      <Facilities heading={false} />
+      <Facilities heading={false} expanded />
       <Admissions onEnquire={onEnquire} />
     </>}
   </PageShell>;
