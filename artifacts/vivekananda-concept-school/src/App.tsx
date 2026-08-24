@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ArrowRight, Award, Baby, BarChart3, BookOpen, Building2, Bus, Calendar, Check, ChevronDown, ChevronRight, ClipboardCheck, Clock, Droplets, Eye, FileText, FlaskConical, Globe2, GraduationCap, Handshake, Heart, Instagram, Languages, Lightbulb, Mail, MapPin, Menu, MessageCircle, MessageSquare, Music, Palette, Phone, Presentation, Quote, Search, Send, Smile, Sprout, Stethoscope, Tent, TrendingUp, Trophy, User, UserRound, Volume2, VolumeX, X } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Award, Baby, BarChart3, BookOpen, Building2, Bus, Calendar, Check, ChevronDown, ChevronRight, ClipboardCheck, Clock, Droplets, Eye, FileText, FlaskConical, Globe2, GraduationCap, Handshake, Heart, Instagram, Languages, Lightbulb, Mail, MapPin, Menu, MessageCircle, MessageSquare, Music, Palette, Phone, Presentation, Quote, Search, Send, Smile, Sprout, Stethoscope, Tent, TrendingUp, Trophy, User, UserRound, Volume2, VolumeX, X } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -1268,36 +1268,49 @@ const BLOG_POSTS = [
   },
 ] as const;
 
+/* Blog card in the four-up index grid: photograph flush across the top, then
+   an italic serif headline, the excerpt, and a letterspaced "Read More" that
+   underlines on hover. The image doubles as a lightbox trigger, so the whole
+   card is not a single link — the headline and Read More carry the
+   navigation instead. */
 function BlogCard({ post, index }: { post: (typeof BLOG_POSTS)[number]; index: number }) {
   const openLightbox = useLightbox();
-  return <article className="reveal flex flex-col overflow-hidden rounded-2xl border-[5px] border-white bg-white shadow-[0_10px_26px_rgba(31,40,56,.16)] ring-1 ring-[#1C2A37]/12" data-testid={`card-blog-${index + 1}`}>
-    <button type="button" onClick={() => openLightbox(post.image, post.title)} className="group block aspect-[16/10] w-full overflow-hidden rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0F4C5C]" data-testid={`button-blog-${index + 1}`}>
-      <img src={post.image} alt={post.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+  return <article className="reveal group/card flex flex-col overflow-hidden rounded-xl bg-white shadow-[0_2px_10px_rgba(31,40,56,.08)] ring-1 ring-[#1C2A37]/10 transition-shadow duration-300 hover:shadow-[0_10px_30px_rgba(31,40,56,.14)]" data-testid={`card-blog-${index + 1}`}>
+    <button type="button" onClick={() => openLightbox(post.image, post.title)} className="block aspect-[16/10] w-full overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0F4C5C]" data-testid={`button-blog-${index + 1}`}>
+      <img src={post.image} alt={post.title} className="h-full w-full object-cover transition-transform duration-500 group-hover/card:scale-105" loading="lazy" />
     </button>
-    <div className="flex flex-1 flex-col px-5 pb-5 pt-4">
-      <div className="flex items-center gap-3 text-[12px] font-semibold text-[#0F4C5C]">
-        <span className="rounded-full bg-[#0F4C5C]/10 px-2.5 py-1 tracking-wide">{post.category}</span>
-        <span className="flex items-center gap-1 text-black/55"><Calendar size={13} aria-hidden="true" /> {post.date}</span>
-      </div>
-      <h3 className="mt-3 font-sans text-[17px] font-semibold leading-snug text-black">{post.title}</h3>
-      <p className="mt-2 flex-1 text-[13.5px] leading-[1.55] text-black/75">{post.excerpt}</p>
-      <Link href={`/blogs/${post.slug}`} className="group/link mt-3 flex items-center gap-1.5 text-[13.5px] font-semibold text-[#0F4C5C]" data-testid={`link-blog-read-more-${index + 1}`}>
-        Read More <ArrowRight size={14} className="transition-transform group-hover/link:translate-x-1" aria-hidden="true" />
+    <div className="flex flex-1 flex-col px-6 pb-6 pt-5">
+      <h3 className="display-serif text-[19px] font-medium italic leading-[1.35] text-black">
+        <Link href={`/blogs/${post.slug}`} data-testid={`link-blog-title-${index + 1}`}>{post.title}</Link>
+      </h3>
+      <p className="mt-3 flex-1 text-[14px] leading-[1.6] text-black/60">{post.excerpt}</p>
+      <Link href={`/blogs/${post.slug}`} className="mt-5 inline-flex w-fit items-center gap-1.5 border-b border-transparent pb-0.5 text-[11.5px] font-semibold uppercase tracking-[.14em] text-[#0F4C5C] transition-colors hover:border-[#0F4C5C]" data-testid={`link-blog-read-more-${index + 1}`}>
+        Read More <ArrowUpRight size={13} aria-hidden="true" />
       </Link>
     </div>
   </article>;
 }
 
+/* The blog index. Unlike the rest of the site's centred, ornamented section
+   headers, this one is left-aligned behind a back arrow to home — the grid
+   below it runs four-up on a wide screen and collapses to one column on a
+   phone. */
 function BlogsPage() {
   return <PageShell title="Blogs | Sree Vivekananda Educational Society" description="Notes from Sree Vivekananda Educational Society, Pulivendla — on the curriculum, campus life, admissions and what a school day here actually looks like.">
     {(onEnquire) => <>
-      <section className="pt-8 md:pt-12"><div className="container-wide flex flex-col items-center">
-        <h1 className="section-heading text-center text-[clamp(2rem,3.6vw,2.8rem)]">Blogs</h1>
-        <div className="ornament mt-2"><span className="ornament-mark">◆</span></div>
-        <p className="reveal mx-auto mt-4 max-w-[600px] text-center text-[15px] leading-[1.6] text-black">Notes on the curriculum, campus life and what a school day here actually looks like.</p>
+      <section className="pt-8 md:pt-12"><div className="container-wide">
+        <div className="flex items-start gap-4">
+          <Link href="/" className="mt-3 shrink-0 text-black/70 transition-colors hover:text-[#0F4C5C] sm:mt-5" aria-label="Back to home" data-testid="link-blogs-back-home">
+            <ArrowRight size={30} className="rotate-180" aria-hidden="true" />
+          </Link>
+          <div>
+            <h1 className="display-serif text-[clamp(2.4rem,5vw,3.6rem)] font-normal leading-[1.05] text-black">Blog</h1>
+            <p className="reveal mt-3 max-w-[560px] text-[15px] leading-[1.6] text-black/55">Notes on the curriculum, campus life and what a school day at Vivekananda Concept School, Pulivendla actually looks like.</p>
+          </div>
+        </div>
       </div></section>
-      <section className="py-5 md:py-7"><div className="container-wide">
-        <div className="mx-auto grid max-w-[1200px] gap-7 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="py-8 md:py-11"><div className="container-wide">
+        <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {BLOG_POSTS.map((post, index) => <BlogCard key={post.title} post={post} index={index} />)}
         </div>
       </div></section>
