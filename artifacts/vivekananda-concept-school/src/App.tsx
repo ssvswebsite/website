@@ -950,7 +950,7 @@ function Footer({ onEnquire, branchLabel, branchAddress }: { onEnquire: () => vo
 
       <div className="mt-2 flex items-center gap-3 sm:mt-5 sm:gap-4">
         <span className="h-px flex-1 bg-[#123A5E]/15" aria-hidden="true" />
-        <p className="text-center text-[8.5px] text-[#3F5771] sm:text-[13px]">© 2026 Narapureddy Saisaran Reddy Educational Society · Mandatory Disclosure</p>
+        <p className="text-center text-[8.5px] text-[#3F5771] sm:text-[13px]">© 2026 Narapureddy Saisaran Reddy. All Rights Reserved</p>
         <span className="h-px flex-1 bg-[#123A5E]/15" aria-hidden="true" />
       </div>
     </div>
