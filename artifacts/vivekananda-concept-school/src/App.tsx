@@ -881,7 +881,11 @@ function GallerySquares() {
   const openLightbox = useLightbox();
   const tile = 'reveal aspect-square w-full overflow-hidden rounded-xl border-[4px] border-white bg-[#EAF1F9] shadow-[0_8px_20px_rgba(31,40,56,.14)] ring-1 ring-[#1C2A37]/15';
   return <div className="mx-auto grid max-w-[1300px] grid-cols-2 gap-5 sm:grid-cols-3 sm:gap-6 md:grid-cols-4 md:gap-8">
-    {Array.from({ length: 25 }, (_, index) => {
+    {/* Twelve while the placeholder is up rather than the full twenty-five:
+        the same box repeated twenty-five times reads as a broken page, where
+        a shorter block reads as deliberate. Twelve also divides evenly by the
+        grid's four, three and two columns, so no row is left part-filled. */}
+    {Array.from({ length: GALLERY_COMING_SOON ? 12 : 25 }, (_, index) => {
       const src = GALLERY_TILE_POOL[index % GALLERY_TILE_POOL.length];
       const alt = `School life gallery ${index + 1}`;
       if (GALLERY_COMING_SOON) return <div key={`coming-soon-${index}`} className={`${tile} grid place-items-center`} data-testid={`tile-gallery-coming-soon-${index + 1}`}>
