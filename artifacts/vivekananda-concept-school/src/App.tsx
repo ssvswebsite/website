@@ -113,10 +113,20 @@ function PinnedIcon({ file, className = '', widthRem = 3.5, style }: { file: str
 type IconPin = { file: string; top?: string; bottom?: string; left?: string; right?: string; size?: number };
 
 const PINNED_ICONS = {
-  /* ── About Us (the intro paragraph, the Vivekananda picture, branch cards) */
+  /* ── About Us (the intro paragraph and the circle beside it) */
   about: [
     { file: 'sun-svgrepo-com.svg', top: '2%', right: '2%', size: 4 },
     { file: 'earth-svgrepo-com.svg', top: '24%', right: '1.5%', size: 4.5 },
+  ],
+  /* ── Campuses (the three branch cards under About Us). Measured against
+        the campuses block itself, not the whole of About Us — the intro
+        above it changes height with the viewport, and percentages of the
+        whole section would drag these around with it. */
+  campuses: [
+    { file: 'educate-svgrepo-com.svg', top: '26%', left: '1.5%', size: 4 },
+    { file: 'elephant-svgrepo-com.svg', top: '70%', left: '2%', size: 4 },
+    { file: 'bulb-svgrepo-com.svg', top: '22%', right: '2%', size: 3.5 },
+    { file: 'giraffe-svgrepo-com.svg', top: '66%', right: '1.5%', size: 4.2 },
   ],
   /* ── SSC Results (the three result posters) */
   results: [
@@ -579,7 +589,9 @@ function Intro() {
       <OrbRing colour="#0F4C5C" spin={0} />
     </figure>
   </div>
-  <div className="container-wide mt-10 md:mt-14">
+  <div className="relative mt-10 md:mt-14">
+    <SectionIcons pins={PINNED_ICONS.campuses} />
+    <div className="container-wide">
     <div className="reveal text-center mb-2">
       <h3 className="text-[15px] font-bold text-[#123A5E] sm:text-[20px]">Campuses in Pulivendla, Kadapa District, Andhra Pradesh</h3>
       <div className="ornament mt-2 flex justify-center"><span className="ornament-mark">◆</span></div>
@@ -603,6 +615,7 @@ function Intro() {
           <p className="mt-2 text-[11px] font-semibold text-[#2E6A9E] flex items-center justify-center gap-1 sm:text-[13px]">View Campus <ArrowRight size={12} className="sm:hidden" /><ArrowRight size={13} className="hidden sm:block" /></p>
         </div>
       </Link>)}
+    </div>
     </div>
   </div>
   </section>;
