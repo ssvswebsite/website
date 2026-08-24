@@ -865,15 +865,29 @@ const GALLERY_TILE_POOL = [
   '/vivekananda.png', '/admissions-popup.jpeg', '/admissions.png', '/logo.jpeg',
 ] as const;
 
+/* The gallery page is waiting on the school's own photographs. Until they
+   are shot, its tiles carry a Coming Soon placeholder instead of the
+   stand-in pictures the rest of the site uses. Set this to `false` to bring
+   the photographs back — nothing else has to change, and the tile pool and
+   layout below are untouched. The home page's gallery section and the
+   per-campus galleries are separate and still show their photographs. */
+const GALLERY_COMING_SOON: boolean = true;
+
 /* Five across and five down — square, bordered tiles rather than the orbs,
-   and no video. Each opens in the lightbox like every other photograph. */
+   and no video. Each opens in the lightbox like every other photograph,
+   unless the placeholder above is on, in which case there is nothing to
+   open and the tile is a plain box. */
 function GallerySquares() {
   const openLightbox = useLightbox();
+  const tile = 'reveal aspect-square w-full overflow-hidden rounded-xl border-[4px] border-white bg-[#EAF1F9] shadow-[0_8px_20px_rgba(31,40,56,.14)] ring-1 ring-[#1C2A37]/15';
   return <div className="mx-auto grid max-w-[1300px] grid-cols-2 gap-5 sm:grid-cols-3 sm:gap-6 md:grid-cols-4 md:gap-8">
     {Array.from({ length: 25 }, (_, index) => {
       const src = GALLERY_TILE_POOL[index % GALLERY_TILE_POOL.length];
       const alt = `School life gallery ${index + 1}`;
-      return <button key={`${src}-${index}`} type="button" onClick={() => openLightbox(src, alt)} className="reveal group aspect-square w-full overflow-hidden rounded-xl border-[4px] border-white bg-[#EAF1F9] shadow-[0_8px_20px_rgba(31,40,56,.14)] ring-1 ring-[#1C2A37]/15 transition hover:shadow-[0_12px_28px_rgba(31,40,56,.22)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0F4C5C]" data-testid={`button-gallery-tile-${index + 1}`}>
+      if (GALLERY_COMING_SOON) return <div key={`coming-soon-${index}`} className={`${tile} grid place-items-center`} data-testid={`tile-gallery-coming-soon-${index + 1}`}>
+        <span className="display-serif px-2 text-center text-[13px] font-medium italic leading-tight text-[#0F4C5C]/65 sm:text-[15px]">Coming Soon</span>
+      </div>;
+      return <button key={`${src}-${index}`} type="button" onClick={() => openLightbox(src, alt)} className={`${tile} group transition hover:shadow-[0_12px_28px_rgba(31,40,56,.22)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0F4C5C]`} data-testid={`button-gallery-tile-${index + 1}`}>
         <img src={src} alt={alt} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
       </button>;
     })}
@@ -1322,15 +1336,17 @@ const BLOG_POSTS = [
 function BlogCard({ post, index }: { post: (typeof BLOG_POSTS)[number]; index: number }) {
   const openLightbox = useLightbox();
   return <article className="reveal group/card flex flex-col overflow-hidden rounded-xl bg-white shadow-[0_2px_10px_rgba(31,40,56,.08)] ring-1 ring-[#1C2A37]/10 transition-shadow duration-300 hover:shadow-[0_10px_30px_rgba(31,40,56,.14)]" data-testid={`card-blog-${index + 1}`}>
-    <button type="button" onClick={() => openLightbox(post.image, post.title)} className="block aspect-[16/10] w-full overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0F4C5C]" data-testid={`button-blog-${index + 1}`}>
+    <button type="button" onClick={() => openLightbox(post.image, post.title)} className="block aspect-[16/9] w-full overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0F4C5C]" data-testid={`button-blog-${index + 1}`}>
       <img src={post.image} alt={post.title} className="h-full w-full object-cover transition-transform duration-500 group-hover/card:scale-105" loading="lazy" />
     </button>
-    <div className="flex flex-1 flex-col px-6 pb-6 pt-5">
-      <h3 className="display-serif text-[19px] font-medium italic leading-[1.35] text-black">
+    <div className="flex flex-1 flex-col px-5 pb-5 pt-4">
+      <h3 className="display-serif text-[17.5px] font-medium italic leading-[1.28] text-black">
         <Link href={`/blogs/${post.slug}`} data-testid={`link-blog-title-${index + 1}`}>{post.title}</Link>
       </h3>
-      <p className="mt-3 flex-1 text-[14px] leading-[1.6] text-black/60">{post.excerpt}</p>
-      <Link href={`/blogs/${post.slug}`} className="mt-5 inline-flex w-fit items-center gap-1.5 border-b border-transparent pb-0.5 text-[11.5px] font-semibold uppercase tracking-[.14em] text-[#0F4C5C] transition-colors hover:border-[#0F4C5C]" data-testid={`link-blog-read-more-${index + 1}`}>
+      {/* Capped at three lines so a long excerpt cannot stretch its card
+          past the others in the row — the full piece is a click away. */}
+      <p className="mt-2.5 line-clamp-3 flex-1 text-[13.5px] leading-[1.55] text-black/60">{post.excerpt}</p>
+      <Link href={`/blogs/${post.slug}`} className="mt-4 inline-flex w-fit items-center gap-1.5 border-b border-transparent pb-0.5 text-[11.5px] font-semibold uppercase tracking-[.14em] text-[#0F4C5C] transition-colors hover:border-[#0F4C5C]" data-testid={`link-blog-read-more-${index + 1}`}>
         Read More <ArrowUpRight size={13} aria-hidden="true" />
       </Link>
     </div>
@@ -1344,8 +1360,8 @@ function BlogCard({ post, index }: { post: (typeof BLOG_POSTS)[number]; index: n
 function BlogsPage() {
   return <PageShell title="Blogs | Sree Vivekananda Educational Society" description="Notes from Sree Vivekananda Educational Society, Pulivendla — on the curriculum, campus life, admissions and what a school day here actually looks like.">
     {(onEnquire) => <>
-      <section className="pt-8 md:pt-12"><div className="container-wide">
-        <div className="flex items-start gap-4">
+      <section className="pt-8 md:pt-12"><div className="container-hero">
+        <div className="mx-auto flex max-w-[1240px] items-start gap-4">
           <Link href="/" className="mt-3 shrink-0 text-black/70 transition-colors hover:text-[#0F4C5C] sm:mt-5" aria-label="Back to home" data-testid="link-blogs-back-home">
             <ArrowRight size={30} className="rotate-180" aria-hidden="true" />
           </Link>
@@ -1355,8 +1371,8 @@ function BlogsPage() {
           </div>
         </div>
       </div></section>
-      <section className="py-8 md:py-11"><div className="container-wide">
-        <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <section className="py-8 md:py-11"><div className="container-hero">
+        <div className="mx-auto grid max-w-[1240px] gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {BLOG_POSTS.map((post, index) => <BlogCard key={post.title} post={post} index={index} />)}
         </div>
       </div></section>
