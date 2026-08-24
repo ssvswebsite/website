@@ -140,6 +140,10 @@ const PINNED_ICONS = {
     { file: 'laptop-svgrepo-com.svg', top: '28%', right: '1.5%', size: 4 },
     { file: 'books-svgrepo-com.svg', top: '62%', right: '1.5%', size: 4 },
   ],
+  /* ── School Life (the two-by-two grid of orbs and their text) */
+  schoolLife: [
+    { file: 'elephant-svgrepo-com.svg', top: '45%', left: '1.5%', size: 4 },
+  ],
   /* ── Photo Gallery (the video and the circles beside it) */
   gallery: [
     { file: 'cricket-svgrepo-com.svg', top: '55%', right: '1.5%', size: 3.5 },
@@ -637,7 +641,9 @@ const SCHOOL_LIFE = [
    circles in Facilities and the Gallery; the fixed-width wrapper is what
    holds it to a size that leaves room for the text alongside. */
 function SchoolLife({ heading = true }: { heading?: boolean }) {
-  return <section id="school-life" className="relative py-5 md:py-7"><div className="container-wide">
+  return <section id="school-life" className="relative py-5 md:py-7">
+    <SectionIcons pins={PINNED_ICONS.schoolLife} />
+    <div className="container-wide">
     {heading && <Heading title="School" accent="Life" />}
     <div className="mx-auto mt-8 grid max-w-[1020px] gap-x-5 gap-y-11 sm:grid-cols-2">
       {SCHOOL_LIFE.map(({ image, title, copy }, index) => <div key={title} className="reveal flex flex-col items-center gap-4 text-center sm:flex-row sm:items-center sm:gap-4 sm:text-left" data-testid={`card-school-life-${index + 1}`}>
